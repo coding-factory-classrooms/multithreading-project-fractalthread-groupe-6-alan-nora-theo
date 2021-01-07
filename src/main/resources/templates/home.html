@@ -1,7 +1,36 @@
 #parse("base.html")
 #@mainLayout()
-<h1>Home Template</h1>
-<div>
-    <img src="img/java.jpg" />
-</div>
+<img id="mandelbrot" src="" hidden>
+<script>
+    let zoom = 1;
+    let move = 1;
+    const maxHeight = window.innerHeight;
+    const maxWidth = window.innerWidth;
+    const image = document.getElementById("mandelbrot");
+    console.log(maxHeight, maxWidth);
+
+    function drawMandelbrot(){
+        fetch(`/mandelbrot?width=${maxWidth}&height=${maxHeight}&zoom=${zoom}&move=${move}`).then(response=>{return response.text()})
+            .then(data=>{
+                image.setAttribute("src",data)
+                image.hidden = false;
+            })
+    }
+
+    document.addEventListener("click",(e)=>{
+        e.preventDefault()
+        console.log("Zoom")
+        zoom +=1;
+        drawMandelbrot()
+    })
+
+    document.addEventListener("keypress",(e)=>{
+        e.preventDefault()
+        console.log("move")
+        move +=100;
+        drawMandelbrot()
+    })
+
+    drawMandelbrot();
+</script>
 #end
