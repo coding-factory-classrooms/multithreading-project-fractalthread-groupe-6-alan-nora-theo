@@ -11,20 +11,24 @@
     function drawMandelbrot(moveX = 0, moveY = 0){
         fetch(`/mandelbrot?width=${maxWidth}&height=${maxHeight}&zoom=${zoom}&moveX=${moveX}&moveY=${moveY}`).then(response=>{return response.text()})
             .then(data=>{
-                image.setAttribute("src",data)
-                image.hidden = false;
-            })
+                image.setAttribute("src",data ?? null)
+                image.hidden = !(image.getAttribute("src") != null);
+            }).catch(e=>{
+                console.error(e)
+        })
     }
 
     function getMoveByClick(e){
         const mouseX = e.screenX, mouseY = e.screenY;
         const centerX = window.innerWidth/2, centerY = window.innerHeight/2
         let moveX = Math.abs(centerX - mouseX), moveY = Math.abs(centerY - mouseY);
+
         // Positif ou négatif ?
         if(centerX > mouseX)
             moveX = -moveX
         if(centerY > mouseY)
             moveY = -moveY
+
         console.log("==================================");
         console.log("Mouse", mouseX, mouseY)
         console.log("Center", centerX, centerY)
@@ -49,7 +53,6 @@
     })
 
     function viewCenterBoxWidth(){
-        // const {widthImage, heightImage} = image.getBoundingClientRect();
         const width = (window.innerWidth/2), height = (window.innerHeight/2);
         const container = document.getElementById("content")
         let node = document.createElement("div")
@@ -71,6 +74,7 @@
         container.appendChild(node2);
     }
 
+    // Init function after load
     viewCenterBoxWidth();
     drawMandelbrot();
 </script>
