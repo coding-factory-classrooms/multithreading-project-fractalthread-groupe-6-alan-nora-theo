@@ -1,6 +1,5 @@
 package org.example.fractal;
 
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -8,8 +7,19 @@ import java.io.File;
 import java.io.IOException;
 
 class Mandelbrot {
-    public static void main(String[] args) {
-        int width = 1920, height = 1080, max = 1000;
+    int width;
+    int height;
+    int max;
+
+    static String saveBasePath = "src/main/resources/static/img/";
+
+    public Mandelbrot(int width, int height, int max) {
+        this.width = width;
+        this.height = height;
+        this.max = max;
+    }
+
+    public void draw(){
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         int black = 0;
         int[] colors = new int[max];
@@ -33,9 +43,9 @@ class Mandelbrot {
                 else image.setRGB(col, row, black);
             }
         }
-        String basePath = "src/main/resources/static/img/";
+
         try {
-            ImageIO.write(image, "jpg", new File(basePath+"mandelbrot.jpg"));
+            ImageIO.write(image, "jpg", new File(saveBasePath+"mandelbrot.jpg"));
         } catch (IOException e) {
             e.printStackTrace();
         }
