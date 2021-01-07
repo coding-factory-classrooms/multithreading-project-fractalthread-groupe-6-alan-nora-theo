@@ -1,6 +1,7 @@
 package org.example.fractal;
 
 import javax.imageio.ImageIO;
+import javax.swing.text.Position;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -8,20 +9,21 @@ import java.io.IOException;
 import java.util.Base64;
 
 public class Mandelbrot {
-    int width;
-    int height;
-    int max;
-    int zoom = 1;
-    int move = 1;
+    private int width;
+    private int height;
+    private int max;
+    private int zoom = 1;
+    private int panx = 0;
+    private Position pan;
 
     static String saveBasePath = "src/main/resources/static/img/";
 
-    public Mandelbrot(int width, int height, int max, int zoom, int move) {
+    public Mandelbrot(int width, int height, int max, int zoom, Position pan) {
         this.width = width;
         this.height = height;
         this.max = max;
         this.zoom = zoom;
-        this.move = move;
+        this.pan = pan;
     }
 
     public String draw(){
@@ -36,10 +38,12 @@ public class Mandelbrot {
             for (int col = 0; col < width; col++) {
                 // Valeur réel = X
                 // c_re = (col - move/2)*4.0/ ZoomVal;
-                double c_re = ((col - (width+move)/2)*4.0/ width)/ zoom;
+//                double c_re = ((col - (width + position.y)/2)*4.0/ width)/ zoom;
+                double c_re =  (((col + pan.x) * 4.0) / width - 2)/zoom;
                 // Valeur Imaginaire = Y
                 // c_im = (row - move/2)*4.0/ ZoomVal;
-                double c_im = ((row - (height+move)/2)*4.0/ width)/zoom;
+//                double c_im = ((row - (height + position.x)/2)*4.0/ width)/zoom;
+                double c_im = ((((row  - height/2)+ pan.y) * 4.0) / width)/zoom;
                 double x = 0, y = 0;
                 int iterations = 0;
                 while (x*x+y*y < 4 && iterations < max) {
@@ -64,5 +68,15 @@ public class Mandelbrot {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public static class Position{
+        float x;
+        float y;
+
+        public Position(float x, float y) {
+            this.x = x;
+            this.y = y;
+        }
     }
 }

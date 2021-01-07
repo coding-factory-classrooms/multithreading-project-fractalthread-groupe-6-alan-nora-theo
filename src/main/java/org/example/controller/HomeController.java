@@ -18,9 +18,11 @@ public class HomeController {
         int width = Integer.parseInt(req.queryParams("width"));
         int height = Integer.parseInt(req.queryParams("height"));
         int zoom = Integer.parseInt(req.queryParams("zoom"));
-        int move = Integer.parseInt(req.queryParams("move"));
+        float moveX = Float.parseFloat(req.queryParams("moveX"));
+        float moveY = Float.parseFloat(req.queryParams("moveY"));
+        Mandelbrot.Position newPosition = new Mandelbrot.Position(moveX, moveY);
 
-        Mandelbrot mandelbrot = new Mandelbrot(width,height, 1000, zoom, move);
+        Mandelbrot mandelbrot = new Mandelbrot(width,height, 1000, zoom, newPosition);
         String b64Image = mandelbrot.draw();
         res.type("text/plain");
         res.status(200);
