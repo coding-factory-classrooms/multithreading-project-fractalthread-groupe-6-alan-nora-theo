@@ -1,12 +1,15 @@
 package org.example.controller;
 
 import org.example.core.Template;
-import org.example.fractal.Mandelbrot;
+import org.example.fractal.MandelbrotTask;
 import spark.Request;
 import spark.Response;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class HomeController {
     public String home(Request req, Response res){
@@ -20,10 +23,11 @@ public class HomeController {
         int zoom = Integer.parseInt(req.queryParams("zoom"));
         float moveX = Float.parseFloat(req.queryParams("moveX"));
         float moveY = Float.parseFloat(req.queryParams("moveY"));
-        Mandelbrot.Position newPosition = new Mandelbrot.Position(moveX, moveY);
 
-        Mandelbrot mandelbrot = new Mandelbrot(width,height, 1000, zoom, newPosition);
-        String b64Image = mandelbrot.draw();
+        MandelbrotTask.Position newPosition = new MandelbrotTask.Position(moveX, moveY);
+        MandelbrotTask mandelbrotTask = new MandelbrotTask(width,height, 5000, zoom, newPosition);
+
+        String b64Image = mandelbrotTask.draw();
         res.type("text/plain");
         res.status(200);
         return b64Image;
