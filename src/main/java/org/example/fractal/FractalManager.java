@@ -22,14 +22,17 @@ public class FractalManager {
     private int ENDY = 0;
     private final int max = 5000;
 
+    private int wSquare = WIDTH / 3 ;
+    private int hSquare = HEIGHT / 2 ;
+
+    private final BufferedImage image = new BufferedImage( WIDTH, HEIGHT, BufferedImage.TYPE_4BYTE_ABGR );
+    private final Graphics2D g = image.createGraphics();
+
 
 
     public String generateFractal(int width, int height, int zoom, MandelbrotTask.Position newPosition) {
 
-        List<Future<List<List<Integer>>>> futures = new ArrayList<>();
-
-        int wSquare = WIDTH / 3 ;
-        int hSquare = HEIGHT / 2 ;
+        List<Future<BufferedImage>> futures = new ArrayList<>();
 
         //On crée le threadpool
        // int cores = Runtime.getRuntime().availableProcessors();
@@ -60,8 +63,8 @@ public class FractalManager {
             e.printStackTrace();
         }
 
-        List<List<List<Integer>>> allMandelbrots = new ArrayList<>();
-        for (Future<List<List<Integer>>> future : futures) {
+        List<BufferedImage> allMandelbrots = new ArrayList<>();
+        for ( Future<BufferedImage> future : futures) {
             try {
                 allMandelbrots.add(future.get());
             } catch (InterruptedException e) {
@@ -70,7 +73,7 @@ public class FractalManager {
                 e.printStackTrace();
             }
         }
-        BufferedImage bufferedImage = drawMandelbrots(allMandelbrots,max, width, height);
+        BufferedImage bufferedImage = drawMandelbrots(allMandelbrots, width, height);
         String image = generate(bufferedImage);
 
         long elapsed = System.currentTimeMillis() - start;
@@ -78,28 +81,14 @@ public class FractalManager {
         return image;
     }
 
-    private BufferedImage drawMandelbrots(List<List<List<Integer>>> allMandelbrots, int max , int width , int height ) {
+    private BufferedImage drawMandelbrots(List<BufferedImage> allMandelbrots , int width , int height ) {
 
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        int black = 0;
-        int[] colors = new int[max];
-        for (int i = 0; i<max; i++) {
-            colors[i] = Color.HSBtoRGB(i/256f, 1, i/(i+8f));
-        }
-        for (List<List<Integer>> pixels : allMandelbrots) {
-            for (int y = 0; y < pixels.size(); y++) {
-                //StringBuilder output = new StringBuilder();
-                List<Integer> xs = pixels.get(y);
-                for (int x = 0; x < xs.size(); x++) {
-
-                    int iteration = xs.get(x);
-                     if (xs.get(x) < max) image.setRGB(x, y, colors[iteration]);
-                    else image.setRGB(x, y, black);
-                    //double intensity = (xs.get(x) - minIntensity) / (maxIntensity - minIntensity);
-                    //int idx = Math.min(palette.length - 1, (int) (palette.length * intensity));
-                    //output.append(palette[idx]);
-                }
-            }
+        final Graphics2D g = image.createGraphics();
+        try {
+            combine(g, allMandelbrots);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return image;
     }
@@ -117,6 +106,24 @@ public class FractalManager {
             e.printStackTrace();
         }
         return "";
+    }
+
+    private void combine(Graphics2D g , List<BufferedImage> images )  throws Exception {
+        int offsetX = 0;
+        int offsetY = 0;
+
+       for (BufferedImage image : images){
+           offsetX = offsetX + WIDTH/3;
+
+           g.drawImage(image , null, offsetX , offsetY );
+
+           if( offsetX == (WIDTH/3) * 2 ){
+               offsetY = offsetY + HEIGHT/2;
+           }
+
+       }
+
+
     }
 
 

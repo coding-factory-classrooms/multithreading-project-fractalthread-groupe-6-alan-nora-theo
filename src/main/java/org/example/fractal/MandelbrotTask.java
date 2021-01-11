@@ -1,10 +1,12 @@
 package org.example.fractal;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-public class MandelbrotTask implements Callable<List<List<Integer>>> {
+public class MandelbrotTask implements Callable<BufferedImage> {
     private int width;
     private int height;
     private int max = 5000 ;
@@ -38,19 +40,23 @@ public class MandelbrotTask implements Callable<List<List<Integer>>> {
 
 
     @Override
-    public List<List<Integer>> call() {
+    public BufferedImage call() {
 
-        List<List<Integer>> pixels = new ArrayList<>();
-
-        for (int y = (int) y0; y < endY; y++) {
-            List<Integer> row = new ArrayList<>();
-            for (int x = (int) x0; x < endX; x++) {
-                row.add(calculatePixels(x,y));
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        int black = 0;
+        int[] colors = new int[max];
+        for (int i = 0; i<max; i++) {
+            colors[i] = Color.HSBtoRGB(i/256f, 1, i/(i+8f));
+        }
+        for (int row = 0 ; row < height; row ++) {
+            for (int col = 0; col < width; col++) {
+                int iterations = calculatePixels(col , row);
+                if (iterations < max) image.setRGB(col, row, colors[iterations]);
+                else image.setRGB(col, row, black);
             }
-            pixels.add(row);
         }
         System.out.println("Finished mandelbrot at y = " + y0);
-        return pixels;
+        return image;
     }
 
 
