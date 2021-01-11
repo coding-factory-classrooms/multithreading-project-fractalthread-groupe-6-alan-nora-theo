@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import org.example.core.Template;
+import org.example.fractal.FractalManager;
 import org.example.fractal.MandelbrotTask;
 import spark.Request;
 import spark.Response;
@@ -25,9 +26,9 @@ public class HomeController {
         float moveY = Float.parseFloat(req.queryParams("moveY"));
 
         MandelbrotTask.Position newPosition = new MandelbrotTask.Position(moveX, moveY);
-        MandelbrotTask mandelbrotTask = new MandelbrotTask(width,height, 5000, zoom, newPosition);
+        FractalManager fractalManager = new FractalManager();
 
-        String b64Image = mandelbrotTask.draw();
+        String b64Image = fractalManager.generateFractal(width,height,zoom, newPosition);
         res.type("text/plain");
         res.status(200);
         return b64Image;

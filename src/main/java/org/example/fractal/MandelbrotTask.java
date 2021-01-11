@@ -1,24 +1,17 @@
 package org.example.fractal;
 
-import javax.imageio.ImageIO;
-import javax.swing.text.Position;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-public class MandelbrotTask implements Callable<List<List<Double>>> {
+public class MandelbrotTask implements Callable<List<List<Integer>>> {
     private int width;
     private int height;
-    private int max;
+    private int max = 5000 ;
     private int zoom;
     private Position pan;
-    private double xSkip;
-    private double ySkip;
+    private double endX;
+    private double endY;
     private double x0;
     private double y0;
 
@@ -37,45 +30,35 @@ public class MandelbrotTask implements Callable<List<List<Double>>> {
         this.width = pixelWidth;
         this.height = pixelHeight;
         this.x0 = startX;
-        this.xSkip = (endX - startX) / pixelWidth;
+        this.endX = endX;
         this.y0 = startY;
-        this.ySkip = (endY - startY) / pixelHeight;
+        this.endY = endY;
     }
 
 
 
     @Override
-    public List<List<Double>> call() {
+    public List<List<Integer>> call() {
 
-        List<List<Double>> pixels = new ArrayList<>();
+        List<List<Integer>> pixels = new ArrayList<>();
 
-        for (int y = 0; y < height; y++) {
-            List<Double> row = new ArrayList<>();
-            for (int x = 0; x < width; x++) {
-
+        for (int y = (int) y0; y < endY; y++) {
+            List<Integer> row = new ArrayList<>();
+            for (int x = (int) x0; x < endX; x++) {
                 row.add(calculatePixels(x,y));
-
-               // if (iterations < max) image.setRGB(col, row, colors[iterations]);
-              //  else image.setRGB(col, row, black);
-
             }
             pixels.add(row);
-
         }
-
+        System.out.println("Finished mandelbrot at y = " + y0);
         return pixels;
     }
 
-    public double calculatePixels(double pixelX, double pixelY) {
-        // Valeur réel = X
-        // c_re = (col - move/2)*4.0/ ZoomVal;
-//                double c_re = ((col - (width + position.y)/2)*4.0/ width)/ zoom;
 
-        double c_re = x0 + pixelX * xSkip;
-        // Valeur Imaginaire = Y
-        // c_im = (row - move/2)*4.0/ ZoomVal;
-//                double c_im = ((row - (height + position.x)/2)*4.0/ width)/zoom;
-        double c_im = y0 + pixelY * ySkip;
+    //Génére les pixels du Mandelbrots
+    public int calculatePixels(double pixelX, double pixelY) {
+
+        double c_re = (pixelY - 500 ) * 4.0 / 500;
+        double c_im = (pixelX - 500 ) * 4.0 / 500 ;
         double x = 0, y = 0;
         int iterations = 0;
         while (x * x + y * y < 4 && iterations < max) {
@@ -84,7 +67,8 @@ public class MandelbrotTask implements Callable<List<List<Double>>> {
             x = x_new;
             iterations++;
         }
-        return Math.log(iterations) / Math.log(max);
+       // double result = Math.log(iterations) / Math.log(max);
+        return iterations;
     }
 
     public static class Position{
