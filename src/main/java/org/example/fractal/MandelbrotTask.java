@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.Callable;
 
-public class MandelbrotTask implements Callable<BufferedImage> {
+public class MandelbrotTask implements Callable<FractalResult> {
     private int width;
     private int height;
     private int max = 5000 ;
@@ -14,31 +14,26 @@ public class MandelbrotTask implements Callable<BufferedImage> {
     private double endY;
     private double x0;
     private double y0;
+    private int id;
 
     static String saveBasePath = "src/main/resources/static/img/";
 
-    public MandelbrotTask(int width, int height, int max, int zoom, Vector pan) {
-        this.width = width;
-        this.height = height;
-        this.max = max;
-        this.zoom = zoom;
-        this.pan = pan;
-    }
 
 
-    public MandelbrotTask(int pixelWidth, int pixelHeight, double startX, double endX, double startY, double endY) {
+    public MandelbrotTask(int pixelWidth, int pixelHeight, double startX, double endX, double startY, double endY,int id) {
         this.width = pixelWidth;
         this.height = pixelHeight;
         this.x0 = startX;
         this.endX = endX;
         this.y0 = startY;
         this.endY = endY;
+        this.id = id;
     }
 
 
 
     @Override
-    public BufferedImage call() {
+    public FractalResult call() {
 
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         int black = 0;
@@ -54,7 +49,8 @@ public class MandelbrotTask implements Callable<BufferedImage> {
             }
         }
         System.out.println("Finished mandelbrot at y = " + y0);
-        return image;
+        FractalResult result = new FractalResult(id,image);
+        return result;
     }
 
 
