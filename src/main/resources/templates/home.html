@@ -8,7 +8,7 @@
     const maxWidth = window.innerWidth;
     const image = document.getElementById("mandelbrot");
 
-    function drawMandelbrot(moveX = 0, moveY = 0){
+    function drawMandelbrot(moveX = 1, moveY = 1){
         fetch(`/mandelbrot?width=${maxWidth}&height=${maxHeight}&zoom=${zoom}&moveX=${moveX}&moveY=${moveY}`).then(response=>{return response.text()})
             .then(data=>{
                 image.setAttribute("src",data ?? null)
@@ -19,8 +19,9 @@
     }
 
     function getMoveByClick(e){
-        const mouseX = e.screenX, mouseY = e.screenY;
-        const centerX = window.innerWidth/2, centerY = window.innerHeight/2
+
+        const mouseX = e.clientX, mouseY = e.clientY;
+        const centerX = image.width/2, centerY = image.height/2
         let moveX = Math.abs(centerX - mouseX), moveY = Math.abs(centerY - mouseY);
 
         // Positif ou négatif ?
@@ -53,10 +54,11 @@
     })
 
     function viewCenterBoxWidth(){
-        const width = (window.innerWidth/2), height = (window.innerHeight/2);
+        const width = (image.width/2), height = (image.height/2);
+        console.log("width:"+width+"; height: "+height);
         const container = document.getElementById("content")
         let node = document.createElement("div")
-        node.style.width = window.innerWidth+"px";
+        node.style.width = image.width+"px";
         node.style.height = "1px";
         node.style.backgroundColor = "white";
         node.style.position = "absolute";
@@ -65,8 +67,8 @@
         container.appendChild(node);
 
         let node2 = document.createElement("div")
-        node2.style.width = 1+"px";
-        node2.style.height = window.innerHeight+"px";
+        node2.style.width = "1px";
+        node2.style.height = image.height+"px";
         node2.style.backgroundColor = "white";
         node2.style.position = "absolute";
         node2.style.top = "0px";

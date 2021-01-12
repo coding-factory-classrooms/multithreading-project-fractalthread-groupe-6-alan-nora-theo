@@ -44,7 +44,7 @@ public class FractalManager {
             startX = endX;
             endX = endX + wSquare;
 
-            futures.add(threadPool.submit(new MandelbrotTask(wSquare, hSquare, startX, endX, startY, endY, id)));
+            futures.add(threadPool.submit(new MandelbrotTask(wSquare, hSquare, startX, endX, startY, endY, id, newVector)));
 
             if( endX == (WIDTH/3) * 3 ){
                 startY = endY;

@@ -22,6 +22,8 @@ public class HomeController {
         float moveX = Float.parseFloat(req.queryParams("moveX"));
         float moveY = Float.parseFloat(req.queryParams("moveY"));
 
+
+
         MandelbrotTask.Vector newVector = new MandelbrotTask.Vector(moveX, moveY);
         FractalManager fractalManager = new FractalManager();
 
