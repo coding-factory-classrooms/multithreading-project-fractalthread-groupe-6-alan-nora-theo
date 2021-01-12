@@ -29,15 +29,17 @@ public class FractalManager {
         int startY = 0;
         int endY = 0;
 
-        List<Future<BufferedImage>> futures = new ArrayList<>();
+        List<Future<FractalResult>> futures = new ArrayList<>();
+        int id = 0;
 
         //On crée le threadpool
-       // int cores = Runtime.getRuntime().availableProcessors();
+        // int cores = Runtime.getRuntime().availableProcessors();
         ExecutorService threadPool = Executors.newFixedThreadPool(6);
         // On lance le threadpool
         endY = endY + hSquare;
-
         for (int thread = 0; thread < 6; thread++) {
+            // On identifie chaque tuile
+            id++;
             // On calcule les limites de chaque tuile
             startX = endX;
             endX = endX + wSquare;
@@ -48,6 +50,7 @@ public class FractalManager {
 
             futures.add(threadPool.submit(new MandelbrotTask(wSquare, hSquare, startX, endX, startY, endY)));
 
+            futures.add(threadPool.submit(new MandelbrotTask(wSquare, hSquare, STARTX, ENDX, STARTY, ENDY,id)));
             if( endX == (WIDTH/3) * 3 ){
                 startY = endY;
                 endY = endY + hSquare;
@@ -65,8 +68,8 @@ public class FractalManager {
             e.printStackTrace();
         }
 
-        List<BufferedImage> allMandelbrots = new ArrayList<>();
-        for ( Future<BufferedImage> future : futures) {
+        List<FractalResult> allMandelbrots = new ArrayList<>();
+        for ( Future<FractalResult> future : futures) {
             try {
                 allMandelbrots.add(future.get());
             } catch (InterruptedException e) {
@@ -83,7 +86,7 @@ public class FractalManager {
         return image;
     }
 
-    private BufferedImage drawMandelbrots(List<BufferedImage> allMandelbrots , int width , int height ) {
+    private BufferedImage drawMandelbrots(List<FractalResult> allMandelbrots , int width , int height ) {
 
         BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         final Graphics2D g = image.createGraphics();
@@ -96,17 +99,27 @@ public class FractalManager {
     }
 
 
-    private void combine(Graphics2D g , List<BufferedImage> images )  throws Exception {
+    private void combine(Graphics2D g , List<FractalResult> results )  throws Exception {
         int offsetX = 0;
         int offsetY = 0;
-       for (BufferedImage image : images){
-           g.drawImage(image , null, offsetX , offsetY );
-           offsetX = offsetX + WIDTH/3;
-           if( offsetX == (WIDTH/3) * 3 ){
-               offsetY = offsetY + HEIGHT/2;
-               offsetX = 0;
-           }
-       }
+        results.sort((a,b)->{
+            return a.id-b.id;
+        });
+        System.out.println(results);
+
+        for (FractalResult result : results){
+
+            g.drawImage(result.image , null, offsetX , offsetY );
+            offsetX = offsetX + WIDTH/3;
+
+            if( offsetX == (WIDTH/3) * 3 ){
+                offsetY = offsetY + HEIGHT/2;
+                offsetX = 0;
+            }
+
+        }
+
+
     }
 
     public String generate(BufferedImage image){
@@ -149,3 +162,13 @@ public class FractalManager {
     }
 
 }
+class FractalResult {
+    int id;
+    BufferedImage image;
+
+    public FractalResult(int id, BufferedImage image) {
+        this.id = id;
+        this.image = image;
+    }
+}
+
