@@ -1,27 +1,48 @@
 #parse("base.html")
 #@mainLayout()
-<img id="mandelbrot" src="" hidden>
+<img id="mandelbrot" src="" hidden height="1000" width="1000">
 <script>
+    const pan = {x:0,y:0};
     let zoom = 1;
-    let move = 1;
     const maxHeight = window.innerHeight;
     const maxWidth = window.innerWidth;
     const image = document.getElementById("mandelbrot");
-    console.log(maxHeight, maxWidth);
 
-    function drawMandelbrot(){
-        fetch(`/mandelbrot?width=${maxWidth}&height=${maxHeight}&zoom=${zoom}&move=${move}`).then(response=>{return response.text()})
+    function drawMandelbrot(moveX = 0, moveY = 0){
+        fetch(`/mandelbrot?width=${maxWidth}&height=${maxHeight}&zoom=${zoom}&moveX=${moveX}&moveY=${moveY}`).then(response=>{return response.text()})
             .then(data=>{
-                image.setAttribute("src",data)
-                image.hidden = false;
-            })
+                image.setAttribute("src",data ?? null)
+                image.hidden = !(image.getAttribute("src") != null);
+            }).catch(e=>{
+                console.error(e)
+        })
+    }
+
+    function getMoveByClick(e){
+        const mouseX = e.screenX, mouseY = e.screenY;
+        const centerX = window.innerWidth/2, centerY = window.innerHeight/2
+        let moveX = Math.abs(centerX - mouseX), moveY = Math.abs(centerY - mouseY);
+
+        // Positif ou négatif ?
+        if(centerX > mouseX)
+            moveX = -moveX
+        if(centerY > mouseY)
+            moveY = -moveY
+
+        console.log("==================================");
+        console.log("Mouse", mouseX, mouseY)
+        console.log("Center", centerX, centerY)
+        console.log("Move ", moveX, moveY);
+        return [moveX, moveY];
     }
 
     document.addEventListener("click",(e)=>{
-        e.preventDefault()
-        console.log("Zoom")
-        zoom +=1;
-        drawMandelbrot()
+        e.preventDefault();
+        const [moveX, moveY] = getMoveByClick(e);
+        pan.x += moveX
+        pan.y += moveY
+        // zoom +=1;
+        drawMandelbrot(pan.x, pan.y)
     })
 
     document.addEventListener("keypress",(e)=>{
@@ -31,6 +52,30 @@
         drawMandelbrot()
     })
 
+    function viewCenterBoxWidth(){
+        const width = (window.innerWidth/2), height = (window.innerHeight/2);
+        const container = document.getElementById("content")
+        let node = document.createElement("div")
+        node.style.width = window.innerWidth+"px";
+        node.style.height = "1px";
+        node.style.backgroundColor = "white";
+        node.style.position = "absolute";
+        node.style.top = height+"px";
+        node.style.right = "0px"
+        container.appendChild(node);
+
+        let node2 = document.createElement("div")
+        node2.style.width = 1+"px";
+        node2.style.height = window.innerHeight+"px";
+        node2.style.backgroundColor = "white";
+        node2.style.position = "absolute";
+        node2.style.top = "0px";
+        node2.style.right = width+"px"
+        container.appendChild(node2);
+    }
+
+    // Init function after load
+    viewCenterBoxWidth();
     drawMandelbrot();
 </script>
 #end
