@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.controller.HomeController;
 import org.example.core.Conf;
 import org.example.core.Template;
 import org.example.middlewares.LoggerMiddleware;
@@ -11,9 +12,10 @@ public class App {
     public static void main(String[] args) {
         initialize();
 
-        Spark.get("/", (req, res) -> {
-            return Template.render("home.html", new HashMap<>());
-        });
+        HomeController homeController = new HomeController();
+
+        Spark.get("/", (req, res) -> homeController.home(req, res));
+        Spark.get("/mandelbrot", (req, res) -> homeController.getPicture(req, res));
     }
 
     static void initialize() {
@@ -24,7 +26,6 @@ public class App {
 
         // Serve static files (img/css/js)
         Spark.staticFiles.externalLocation(Conf.STATIC_DIR.getPath());
-
         // Configure server port
         Spark.port(Conf.HTTP_PORT);
         final LoggerMiddleware log = new LoggerMiddleware();

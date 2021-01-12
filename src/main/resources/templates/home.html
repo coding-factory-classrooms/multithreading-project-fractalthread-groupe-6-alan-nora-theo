@@ -1,7 +1,83 @@
 #parse("base.html")
 #@mainLayout()
-<h1>Home Template</h1>
-<div>
-    <img src="img/java.jpg" />
-</div>
+<img id="mandelbrot" src="" hidden height="1000" width="1000">
+<script>
+    const pan = {x:0,y:0};
+    let zoom = 1;
+    const maxHeight = window.innerHeight;
+    const maxWidth = window.innerWidth;
+    const image = document.getElementById("mandelbrot");
+
+    function drawMandelbrot(moveX = 1, moveY = 1){
+        fetch(`/mandelbrot?width=${maxWidth}&height=${maxHeight}&zoom=${zoom}&moveX=${moveX}&moveY=${moveY}`).then(response=>{return response.text()})
+            .then(data=>{
+                image.setAttribute("src",data ?? null)
+                image.hidden = !(image.getAttribute("src") != null);
+            }).catch(e=>{
+                console.error(e)
+        })
+    }
+
+    function getMoveByClick(e){
+
+        const mouseX = e.clientX, mouseY = e.clientY;
+        const centerX = image.width/2, centerY = image.height/2
+        let moveX = Math.abs(centerX - mouseX), moveY = Math.abs(centerY - mouseY);
+
+        // Positif ou négatif ?
+        if(centerX > mouseX)
+            moveX = -moveX
+        if(centerY > mouseY)
+            moveY = -moveY
+
+        console.log("==================================");
+        console.log("Mouse", mouseX, mouseY)
+        console.log("Center", centerX, centerY)
+        console.log("Move ", moveX, moveY);
+        return [moveX, moveY];
+    }
+
+    document.addEventListener("click",(e)=>{
+        e.preventDefault();
+        const [moveX, moveY] = getMoveByClick(e);
+        pan.x += moveX
+        pan.y += moveY
+        // zoom +=1;
+        drawMandelbrot(pan.x, pan.y)
+    })
+
+    document.addEventListener("keypress",(e)=>{
+        e.preventDefault()
+        console.log("move")
+        move +=100;
+        drawMandelbrot()
+    })
+
+    function viewCenterBoxWidth(){
+        const width = (image.width/2), height = (image.height/2);
+        console.log("width:"+width+"; height: "+height);
+        const container = document.getElementById("content")
+        let node = document.createElement("div")
+        node.style.width = image.width+"px";
+        node.style.height = "1px";
+        node.style.backgroundColor = "white";
+        node.style.position = "absolute";
+        node.style.top = height+"px";
+        node.style.right = "0px"
+        container.appendChild(node);
+
+        let node2 = document.createElement("div")
+        node2.style.width = "1px";
+        node2.style.height = image.height+"px";
+        node2.style.backgroundColor = "white";
+        node2.style.position = "absolute";
+        node2.style.top = "0px";
+        node2.style.right = width+"px"
+        container.appendChild(node2);
+    }
+
+    // Init function after load
+    viewCenterBoxWidth();
+    drawMandelbrot();
+</script>
 #end
