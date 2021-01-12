@@ -12,8 +12,8 @@ public class MandelbrotTask implements Callable<BufferedImage> {
     private Vector pan;
     private double endX;
     private double endY;
-    private double x0;
-    private double y0;
+    private double startX;
+    private double startY;
 
     static String saveBasePath = "src/main/resources/static/img/";
 
@@ -29,9 +29,9 @@ public class MandelbrotTask implements Callable<BufferedImage> {
     public MandelbrotTask(int pixelWidth, int pixelHeight, double startX, double endX, double startY, double endY) {
         this.width = pixelWidth;
         this.height = pixelHeight;
-        this.x0 = startX;
+        this.startX = startX;
         this.endX = endX;
-        this.y0 = startY;
+        this.startY = startY;
         this.endY = endY;
     }
 
@@ -39,7 +39,7 @@ public class MandelbrotTask implements Callable<BufferedImage> {
 
     @Override
     public BufferedImage call() {
-
+//        System.out.println(startX);
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         int black = 0;
         int[] colors = new int[max];
@@ -53,7 +53,7 @@ public class MandelbrotTask implements Callable<BufferedImage> {
                 else image.setRGB(col, row, black);
             }
         }
-        System.out.println("Finished mandelbrot at y = " + y0);
+//        System.out.println("Finished mandelbrot at y = " + y0);
         return image;
     }
 
@@ -61,8 +61,8 @@ public class MandelbrotTask implements Callable<BufferedImage> {
     //Génére les pixels du Mandelbrots
     public int calculatePixels(double pixelX, double pixelY) {
 
-        double c_re = (pixelY - 500 ) * 4.0 / 500;
-        double c_im = (pixelX - 500 ) * 4.0 / 500 ;
+        double c_re = ((pixelY+ startY) - 500) * 4.0 / 500;
+        double c_im = ((pixelX + startX) - 500) * 4.0  /500;
         double x = 0, y = 0;
         int iterations = 0;
         while (x * x + y * y < 4 && iterations < max) {

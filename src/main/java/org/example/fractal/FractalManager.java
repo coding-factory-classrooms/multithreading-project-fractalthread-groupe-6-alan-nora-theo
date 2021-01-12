@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -16,21 +17,17 @@ public class FractalManager {
     private static final int HEIGHT = 1000;
     //private static final int THREADS = 8;
 
-    private int STARTX = 0;
-    private int ENDX = 0;
-    private int STARTY = 0;
-    private int ENDY = 0;
     private final int max = 5000;
 
-    private int wSquare = WIDTH / 3 ;
-    private int hSquare = HEIGHT / 2 ;
-
-    private final BufferedImage image = new BufferedImage( WIDTH, HEIGHT, BufferedImage.TYPE_4BYTE_ABGR );
-    private final Graphics2D g = image.createGraphics();
-
-
-
     public String generateFractal(int width, int height, int zoom, MandelbrotTask.Vector newVector) {
+
+        int wSquare = WIDTH / 3 ;
+        int hSquare = HEIGHT / 2 ;
+
+        int startX = 0;
+        int endX = 0;
+        int startY = 0;
+        int endY = 0;
 
         List<Future<BufferedImage>> futures = new ArrayList<>();
 
@@ -38,20 +35,25 @@ public class FractalManager {
        // int cores = Runtime.getRuntime().availableProcessors();
         ExecutorService threadPool = Executors.newFixedThreadPool(6);
         // On lance le threadpool
+        endY = endY + hSquare;
+
         for (int thread = 0; thread < 6; thread++) {
-
             // On calcule les limites de chaque tuile
-            STARTX = ENDX;
-            ENDX = ENDX + wSquare;
-            STARTY = ENDY;
-            ENDY = ENDY + hSquare;
+            startX = endX;
+            endX = endX + wSquare;
 
+            System.out.println(startX +" : "+endX);
+            System.out.println(startY +" : "+endY);
+            System.out.println("================");
 
-            //MandelbrotTask mandelbrotTask = new MandelbrotTask(width,height, 5000, zoom, newPosition);
+            futures.add(threadPool.submit(new MandelbrotTask(wSquare, hSquare, startX, endX, startY, endY)));
 
-            futures.add(threadPool.submit(new MandelbrotTask(wSquare, hSquare, STARTX, ENDX, STARTY, ENDY)));
-
-
+            if( endX == (WIDTH/3) * 3 ){
+                startY = endY;
+                endY = endY + hSquare;
+                startX = 0;
+                endX = 0;
+            }
         }
 
         long start = System.currentTimeMillis();
@@ -77,13 +79,13 @@ public class FractalManager {
         String image = generate(bufferedImage);
 
         long elapsed = System.currentTimeMillis() - start;
-        System.out.println(elapsed);
+//        System.out.println(elapsed);
         return image;
     }
 
     private BufferedImage drawMandelbrots(List<BufferedImage> allMandelbrots , int width , int height ) {
 
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         final Graphics2D g = image.createGraphics();
         try {
             combine(g, allMandelbrots);
@@ -97,24 +99,20 @@ public class FractalManager {
     private void combine(Graphics2D g , List<BufferedImage> images )  throws Exception {
         int offsetX = 0;
         int offsetY = 0;
-
        for (BufferedImage image : images){
-           offsetX = offsetX + WIDTH/3;
-
            g.drawImage(image , null, offsetX , offsetY );
-
-           if( offsetX == (WIDTH/3) * 2 ){
+           offsetX = offsetX + WIDTH/3;
+           if( offsetX == (WIDTH/3) * 3 ){
                offsetY = offsetY + HEIGHT/2;
+               offsetX = 0;
            }
-
        }
-
-
     }
 
     public String generate(BufferedImage image){
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ImageIO.write(image, "jpg", new File("mandelbrot.png"));
             ImageIO.write(image, "jpg", out);
             byte[] bytes = out.toByteArray();
             String base64bytes = Base64.getEncoder().encodeToString(bytes);
