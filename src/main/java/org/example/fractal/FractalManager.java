@@ -44,13 +44,8 @@ public class FractalManager {
             startX = endX;
             endX = endX + wSquare;
 
-            System.out.println(startX +" : "+endX);
-            System.out.println(startY +" : "+endY);
-            System.out.println("================");
+            futures.add(threadPool.submit(new MandelbrotTask(wSquare, hSquare, startX, endX, startY, endY, id)));
 
-            futures.add(threadPool.submit(new MandelbrotTask(wSquare, hSquare, startX, endX, startY, endY)));
-
-            futures.add(threadPool.submit(new MandelbrotTask(wSquare, hSquare, STARTX, ENDX, STARTY, ENDY,id)));
             if( endX == (WIDTH/3) * 3 ){
                 startY = endY;
                 endY = endY + hSquare;
@@ -125,7 +120,6 @@ public class FractalManager {
     public String generate(BufferedImage image){
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            ImageIO.write(image, "jpg", new File("mandelbrot.png"));
             ImageIO.write(image, "jpg", out);
             byte[] bytes = out.toByteArray();
             String base64bytes = Base64.getEncoder().encodeToString(bytes);

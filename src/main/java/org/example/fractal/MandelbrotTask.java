@@ -48,8 +48,8 @@ public class MandelbrotTask implements Callable<FractalResult> {
                 else image.setRGB(col, row, black);
             }
         }
-        return result;
         FractalResult result = new FractalResult(id,image);
+        return result;
     }
 
 
