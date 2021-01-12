@@ -2,8 +2,6 @@ package org.example.fractal;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
 
 public class MandelbrotTask implements Callable<BufferedImage> {
@@ -11,7 +9,7 @@ public class MandelbrotTask implements Callable<BufferedImage> {
     private int height;
     private int max = 5000 ;
     private int zoom;
-    private Position pan;
+    private Vector pan;
     private double endX;
     private double endY;
     private double x0;
@@ -19,7 +17,7 @@ public class MandelbrotTask implements Callable<BufferedImage> {
 
     static String saveBasePath = "src/main/resources/static/img/";
 
-    public MandelbrotTask(int width, int height, int max, int zoom, Position pan) {
+    public MandelbrotTask(int width, int height, int max, int zoom, Vector pan) {
         this.width = width;
         this.height = height;
         this.max = max;
@@ -77,11 +75,11 @@ public class MandelbrotTask implements Callable<BufferedImage> {
         return iterations;
     }
 
-    public static class Position{
+    public static class Vector { // TODO: Vector
         float x;
         float y;
 
-        public Position(float x, float y) {
+        public Vector(float x, float y) {
             this.x = x;
             this.y = y;
         }

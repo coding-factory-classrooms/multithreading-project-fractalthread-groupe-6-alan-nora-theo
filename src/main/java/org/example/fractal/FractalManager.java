@@ -30,7 +30,7 @@ public class FractalManager {
 
 
 
-    public String generateFractal(int width, int height, int zoom, MandelbrotTask.Position newPosition) {
+    public String generateFractal(int width, int height, int zoom, MandelbrotTask.Vector newVector) {
 
         List<Future<BufferedImage>> futures = new ArrayList<>();
 
@@ -93,20 +93,6 @@ public class FractalManager {
         return image;
     }
 
-    public String generate(BufferedImage image){
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            ImageIO.write(image, "jpg", out);
-            byte[] bytes = out.toByteArray();
-            String base64bytes = Base64.getEncoder().encodeToString(bytes);
-            String src = "data:image/jpeg;base64," + base64bytes;
-
-            return src;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
 
     private void combine(Graphics2D g , List<BufferedImage> images )  throws Exception {
         int offsetX = 0;
@@ -126,5 +112,42 @@ public class FractalManager {
 
     }
 
+    public String generate(BufferedImage image){
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ImageIO.write(image, "jpg", out);
+            byte[] bytes = out.toByteArray();
+            String base64bytes = Base64.getEncoder().encodeToString(bytes);
+            String src = "data:image/jpeg;base64," + base64bytes;
+
+            return src;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+
+    public class FractalConfig{
+        int width;
+        int height;
+        int startX;
+        int endX;
+        int startY;
+        int endY;
+        float zoom;
+        MandelbrotTask.Vector Vector;
+
+        public FractalConfig(int width, int height, int startX, int endX, int startY, int endY, float zoom, MandelbrotTask.Vector vector) {
+            this.width = width;
+            this.height = height;
+            this.startX = startX;
+            this.endX = endX;
+            this.startY = startY;
+            this.endY = endY;
+            this.zoom = zoom;
+            Vector = vector;
+        }
+    }
 
 }

@@ -8,9 +8,6 @@ import spark.Response;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class HomeController {
     public String home(Request req, Response res){
@@ -25,10 +22,10 @@ public class HomeController {
         float moveX = Float.parseFloat(req.queryParams("moveX"));
         float moveY = Float.parseFloat(req.queryParams("moveY"));
 
-        MandelbrotTask.Position newPosition = new MandelbrotTask.Position(moveX, moveY);
+        MandelbrotTask.Vector newVector = new MandelbrotTask.Vector(moveX, moveY);
         FractalManager fractalManager = new FractalManager();
 
-        String b64Image = fractalManager.generateFractal(width,height,zoom, newPosition);
+        String b64Image = fractalManager.generateFractal(width,height,zoom, newVector);
         res.type("text/plain");
         res.status(200);
         return b64Image;
