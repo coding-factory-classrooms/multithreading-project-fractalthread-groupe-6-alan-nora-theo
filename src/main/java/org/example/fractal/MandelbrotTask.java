@@ -21,12 +21,9 @@ public class MandelbrotTask implements Callable<FractalResult> {
 
 
 
-    public MandelbrotTask(int pixelWidth, int pixelHeight, double startX, double endX, double startY, double endY,int id, Layout layout) {
-        this.width = pixelWidth;
-        this.height = pixelHeight;
-
-   
-
+    public MandelbrotTask(int widthChuck, int heightChuck, double startX, double startY,int id, Vector vector, float zoom, Layout layout) {
+        this.width = widthChuck;
+        this.height = heightChuck;
         this.startX = startX;
         this.endX = startX + widthChuck;
         this.startY = startY;
@@ -52,7 +49,7 @@ public class MandelbrotTask implements Callable<FractalResult> {
         for (int row = 0 ; row < height; row ++) {
             for (int col = 0; col < width; col++) {
 
-                int iterations = calculatePixels(col , row , layout);
+                int iterations = calculatePixels(col , row , pan, layout);
 
                 if (iterations < max) image.setRGB(col, row, colors[iterations]);
                 else image.setRGB(col, row, black);
@@ -65,13 +62,13 @@ public class MandelbrotTask implements Callable<FractalResult> {
 
     //Génére les pixels du Mandelbrots
 
-    public int calculatePixels(double pixelX, double pixelY, Layout layout) {
+    public int calculatePixels(double pixelX, double pixelY, Vector vector, Layout layout) {
 
         int widthLayout = (int)layout.getWidth()/2;
         int heightLayout = (int)layout.getHeight()/2;
 
-        double c_re = ((pixelX + startX) - widthLayout) * 4.0  /heightLayout;
-        double c_im = ((pixelY+ startY) - heightLayout) * 4.0 / widthLayout;
+        double c_re = ((((pixelX + startX) - widthLayout) + vector.x)* 4.0  /heightLayout) / zoom;
+        double c_im = ((((pixelY+ startY) - heightLayout) + vector.y) * 4.0 / widthLayout) / zoom;
 
  
         double x = 0, y = 0;

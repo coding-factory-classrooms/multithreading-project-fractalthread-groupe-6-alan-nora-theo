@@ -22,17 +22,14 @@ public class HomeController {
         float zoom = Float.parseFloat(req.queryParams("zoom"));
         float moveX = Float.parseFloat(req.queryParams("moveX"));
         float moveY = Float.parseFloat(req.queryParams("moveY"));
-  
-
-
+        int layoutHeight = Integer.parseInt(req.queryParams("layoutHeight"));
+        int layoutWidth = Integer.parseInt(req.queryParams("layoutWidth"));
 
         MandelbrotTask.Vector newVector = new MandelbrotTask.Vector(moveX, moveY);
         FractalManager fractalManager = new FractalManager();
-
         Layout layout = new Layout(layoutHeight,layoutWidth);
 
         String b64Image = fractalManager.generateFractal(height, width, zoom, newVector,layout);
-
         res.type("text/plain");
         res.status(200);
         return b64Image;

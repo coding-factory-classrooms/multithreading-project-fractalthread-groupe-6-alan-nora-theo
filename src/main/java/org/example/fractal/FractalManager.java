@@ -21,8 +21,8 @@ public class FractalManager {
     private final int max = 5000;
 
 
-    public String generateFractal(int width, int height, int zoom, MandelbrotTask.Vector newVector, Layout layout) {
-
+    public String generateFractal(int width, int height, float zoom, MandelbrotTask.Vector newVector, Layout layout) {
+        List<Future<FractalResult>> futures = new ArrayList<>();
         int wSquare = layout.WIDTH / 3 ;
         int hSquare = layout.HEIGHT / 2 ;
 
@@ -37,15 +37,13 @@ public class FractalManager {
         for (int thread = 0; thread < 6; thread++) {
             // On identifie chaque tuile
         
-            futures.add(threadPool.submit(new MandelbrotTask(wSquare, hSquare, startX, endX, startY, endY, id, layout)));
+            futures.add(threadPool.submit(new MandelbrotTask(wSquare, hSquare, startX, startY, id, newVector, zoom,layout)));
 
-            
             // On calcule les limites de chaque tuile
             startX = startX+wSquare;
 
-          if( endX == (layout.getWidth()/3) * 3 ){
-                startY = endY;
-                endY = endY + hSquare;
+          if( startX == (layout.getWidth()/3) * 3 ){
+                startY = startY + hSquare;
                 startX = 0;
             }
         }

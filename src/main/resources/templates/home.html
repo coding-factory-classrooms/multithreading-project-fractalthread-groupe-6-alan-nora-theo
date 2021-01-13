@@ -3,10 +3,10 @@
 
 <!--<canvas id="fractal"></canvas>-->
 <div id="fractal-content">
-    <img id="fractal" src="" hidden height="1000" width="1000"  style="z-index: 1">
+    <img id="fractal" src="" hidden style="z-index: 1">
 </div>
 <div class="toolbar">
-    <img id="zoom-in" class="button-fractal" src="img/zoom-in.svg" height="50" width="50" style="" onclick="zoomIn()">
+    <img id="zoom-in" class="button-fractal" src="img/zoom-in.svg" top="50" width="50" style="" onclick="zoomIn()">
     <img id="zoom-out" class="button-fractal" src="img/zoom-out.svg" height="50" width="50" style=""  onclick="zoomOut()">
 </div>
 <script>
@@ -19,29 +19,34 @@
     let maxHeight = window.innerHeight;
     let maxWidth = window.innerWidth;
 
-    function drawMandelbrot(moveX = pan.x, moveY = pan.y){
+    function drawMandelbrot(moveX = 1, moveY = 1){
         fetch(`/mandelbrot?width=${maxWidth}&height=${maxHeight}&zoom=${zoom}&moveX=${moveX}&moveY=${moveY}&layoutHeight=${maxHeight}&layoutWidth=${maxWidth}`).then(response=>{return response.text()})
             .then(data=>{
                 const image = document.getElementById("fractal");
                 image.setAttribute("src",data)
                 image.hidden = !(image.getAttribute("src") != null);
-                viewCenterBoxWidth();
+
             }).catch(e=>{
                 console.error(e)
         })
 
     }
 
-     window.onresize = function(){
-       maxHeight = window.innerHeight;
-       maxWidth =  window.innerWidth;
+    setTimeout(function() {
+        window.onresize = function(){
+        maxHeight = window.innerHeight;
+        maxWidth =  window.innerWidth;
 
-    console.log("Fenetre reajuster - height" + window.innerHeight );
-    console.log("Fenetre reajuster - width" + window.innerWidth);
+        console.log("Fenetre reajuster - height" + window.innerHeight );
+        console.log("Fenetre reajuster - width" + window.innerWidth);
 
-    requestAnimationFrame(drawMandelbrot);
+        requestAnimationFrame(drawMandelbrot);
 
         }
+
+    }, 500);
+
+
 
 
     function getMoveByClick(e){
@@ -57,11 +62,15 @@
             moveX = -moveX
         if(centerY > mouseY)
             moveY = -moveY
+        console.log("==================================");
+        console.log("Mouse", mouseX, mouseY)
+        console.log("Center", centerX, centerY)
+        console.log("Move ", moveX, moveY);
 
         return [moveX, moveY];
     }
 
-    document.getElementById("fractal").addEventListener("click",(e)=>{
+       document.addEventListener("click",(e)=>{
         e.preventDefault();
         const [moveX, moveY] = getMoveByClick(e);
         pan.x += moveX
