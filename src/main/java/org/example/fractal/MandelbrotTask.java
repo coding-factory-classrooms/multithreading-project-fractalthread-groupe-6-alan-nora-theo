@@ -15,12 +15,13 @@ public class MandelbrotTask implements Callable<FractalResult> {
     private double startX;
     private double startY;
     private int id;
+    private Layout layout;
 
     static String saveBasePath = "src/main/resources/static/img/";
 
 
 
-    public MandelbrotTask(int pixelWidth, int pixelHeight, double startX, double endX, double startY, double endY,int id) {
+    public MandelbrotTask(int pixelWidth, int pixelHeight, double startX, double endX, double startY, double endY,int id, Layout layout) {
         this.width = pixelWidth;
         this.height = pixelHeight;
         this.startX = startX;
@@ -28,6 +29,7 @@ public class MandelbrotTask implements Callable<FractalResult> {
         this.startY = startY;
         this.endY = endY;
         this.id = id;
+        this.layout = layout;
     }
 
 
@@ -43,7 +45,7 @@ public class MandelbrotTask implements Callable<FractalResult> {
         }
         for (int row = 0 ; row < height; row ++) {
             for (int col = 0; col < width; col++) {
-                int iterations = calculatePixels(col , row);
+                int iterations = calculatePixels(col , row , layout);
                 if (iterations < max) image.setRGB(col, row, colors[iterations]);
                 else image.setRGB(col, row, black);
             }
@@ -54,10 +56,13 @@ public class MandelbrotTask implements Callable<FractalResult> {
 
 
     //Génére les pixels du Mandelbrots
-    public int calculatePixels(double pixelX, double pixelY) {
+    public int calculatePixels(double pixelX, double pixelY, Layout layout) {
 
-        double c_re = ((pixelX + startX) - 500) * 4.0  /500;
-        double c_im = ((pixelY+ startY) - 500) * 4.0 / 500;
+        int widthLayout = (int)layout.getWidth()/2;
+        int heightLayout = (int)layout.getHeight()/2;
+
+        double c_re = ((pixelX + startX) - widthLayout) * 4.0  /heightLayout;
+        double c_im = ((pixelY+ startY) - heightLayout) * 4.0 / widthLayout;
         double x = 0, y = 0;
         int iterations = 0;
         while (x * x + y * y < 4 && iterations < max) {
@@ -79,4 +84,7 @@ public class MandelbrotTask implements Callable<FractalResult> {
             this.y = y;
         }
     }
+
+
+
 }
