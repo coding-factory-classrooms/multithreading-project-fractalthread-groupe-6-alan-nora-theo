@@ -1,9 +1,11 @@
 package org.example.controller;
 
 import org.example.core.Template;
+import org.example.fractal.FractalConfig;
 import org.example.fractal.FractalManager;
 import org.example.fractal.Layout;
 import org.example.fractal.MandelbrotTask;
+import org.example.fractal.TypeFractal;
 import spark.Request;
 import spark.Response;
 
@@ -26,10 +28,10 @@ public class HomeController {
         int layoutWidth = Integer.parseInt(req.queryParams("layoutWidth"));
 
         MandelbrotTask.Vector newVector = new MandelbrotTask.Vector(moveX, moveY);
-        FractalManager fractalManager = new FractalManager();
+        FractalConfig fractalConfig = new FractalConfig(3,3,5000, TypeFractal.MANDELBROT);
+        FractalManager fractalManager = new FractalManager(fractalConfig);
         Layout layout = new Layout(layoutHeight,layoutWidth);
-
-        String b64Image = fractalManager.generateFractal(height, width, zoom, newVector,layout);
+        String b64Image = fractalManager.generateFractal(width,height,zoom, newVector);
         res.type("text/plain");
         res.status(200);
         return b64Image;

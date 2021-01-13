@@ -5,9 +5,9 @@
 <div id="fractal-content">
     <img id="fractal" src="" hidden style="z-index: 1">
 </div>
-<div class="toolbar">
-    <img id="zoom-in" class="button-fractal" src="img/zoom-in.svg" top="50" width="50" style="" onclick="zoomIn()">
-    <img id="zoom-out" class="button-fractal" src="img/zoom-out.svg" height="50" width="50" style=""  onclick="zoomOut()">
+<div>
+    <img id="zoom-in" class="button-fractal" src="img/zoom-in.svg" height="50" width="50" style="bottom: 10px;right: 10px" onclick="zoomIn()">
+    <img id="zoom-out" class="button-fractal" src="img/zoom-out.svg" height="50" width="50" style="bottom: 10px;right: 90px"  onclick="zoomOut()">
 </div>
 <script>
     const pan = {x:0,y:0};
@@ -49,12 +49,13 @@
 
 
 
-    function getMoveByClick(e){
+    function getMoveCoordinate(e){
         const image = document.getElementById("fractal");
-        const imgWidth = document.getElementById("fractal").clientWidth
-        const imgHigth = document.getElementById("fractal").clientHeight
+        const imgWidth = image.clientWidth
+        const imgHigth = image.clientHeight
         const mouseX = e.clientX, mouseY = e.clientY;
-        const centerX = imgWidth/2, centerY = imgHigth/2
+        const offsetLeft = window.innerWidth - imgWidth
+        const centerX = (imgWidth+offsetLeft)/2, centerY = imgHigth/2
         let moveX = Math.abs(centerX - mouseX), moveY = Math.abs(centerY - mouseY);
 
         // Positif ou négatif ?
@@ -72,11 +73,34 @@
 
        document.addEventListener("click",(e)=>{
         e.preventDefault();
-        const [moveX, moveY] = getMoveByClick(e);
-        pan.x += moveX
-        pan.y += moveY
+        const [moveX, moveY] = getMoveCoordinate(e);
+        const lengthNumberX = Math.abs(moveX).toString().length;
+        const lengthNumberY = Math.abs(moveY).toString().length;
+        pan.x += moveX / 500 * 0.5;
+        pan.y += moveY / 500 * 0.5;
         drawMandelbrot(pan.x, pan.y)
     })
+
+// Custom Implemation Reload Window
+    let keyR = false;
+    let keyCmd = false
+    document.addEventListener("keydown", (e)=>{
+        e.preventDefault();
+        if(e.code == "MetaLeft")
+            keyCmd = true
+        if(e.code == "KeyR")
+            keyR = true
+        if(keyR && keyCmd)
+            window.location.reload()
+    })
+    document.addEventListener("keyup", (e)=>{
+        e.preventDefault();
+        if(e.code == "MetaLeft")
+            keyCmd = false
+        if(e.code == "KeyR")
+            keyR = false
+    })
+    // =============================
 
     function zoomIn(){
         let resultZoomEchlon = zoomMultiplierLanding.find(e=>e===parseFloat(zoom.toPrecision(2)));
@@ -135,8 +159,6 @@
         container.appendChild(node2);
     }
 
-    // Init function after load
-    // viewCenterBoxWidth();
     drawMandelbrot();
 </script>
 #end
