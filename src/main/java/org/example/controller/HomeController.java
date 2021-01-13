@@ -2,6 +2,7 @@ package org.example.controller;
 
 import org.example.core.Template;
 import org.example.fractal.FractalManager;
+import org.example.fractal.Layout;
 import org.example.fractal.MandelbrotTask;
 import spark.Request;
 import spark.Response;
@@ -21,13 +22,17 @@ public class HomeController {
         float zoom = Float.parseFloat(req.queryParams("zoom"));
         float moveX = Float.parseFloat(req.queryParams("moveX"));
         float moveY = Float.parseFloat(req.queryParams("moveY"));
+  
 
 
 
         MandelbrotTask.Vector newVector = new MandelbrotTask.Vector(moveX, moveY);
         FractalManager fractalManager = new FractalManager();
-        System.out.println("Zoom: "+zoom);
-        String b64Image = fractalManager.generateFractal(width,height,zoom, newVector);
+
+        Layout layout = new Layout(layoutHeight,layoutWidth);
+
+        String b64Image = fractalManager.generateFractal(height, width, zoom, newVector,layout);
+
         res.type("text/plain");
         res.status(200);
         return b64Image;

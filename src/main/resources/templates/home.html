@@ -1,5 +1,6 @@
 #parse("base.html")
 #@mainLayout()
+
 <!--<canvas id="fractal"></canvas>-->
 <div id="fractal-content">
     <img id="fractal" src="" hidden height="1000" width="1000"  style="z-index: 1">
@@ -15,11 +16,11 @@
     let zoomMultiplier = 0.1;
     let zoom = 1.0;
     let scale = 0;
-    const maxHeight = window.innerHeight;
-    const maxWidth = window.innerWidth;
+    let maxHeight = window.innerHeight;
+    let maxWidth = window.innerWidth;
 
     function drawMandelbrot(moveX = pan.x, moveY = pan.y){
-        fetch(`/mandelbrot?width=${maxWidth}&height=${maxHeight}&zoom=${zoom}&moveX=${moveX}&moveY=${moveY}`).then(response=>{return response.text()})
+        fetch(`/mandelbrot?width=${maxWidth}&height=${maxHeight}&zoom=${zoom}&moveX=${moveX}&moveY=${moveY}&layoutHeight=${maxHeight}&layoutWidth=${maxWidth}`).then(response=>{return response.text()})
             .then(data=>{
                 const image = document.getElementById("fractal");
                 image.setAttribute("src",data)
@@ -28,7 +29,20 @@
             }).catch(e=>{
                 console.error(e)
         })
+
     }
+
+     window.onresize = function(){
+       maxHeight = window.innerHeight;
+       maxWidth =  window.innerWidth;
+
+    console.log("Fenetre reajuster - height" + window.innerHeight );
+    console.log("Fenetre reajuster - width" + window.innerWidth);
+
+    requestAnimationFrame(drawMandelbrot);
+
+        }
+
 
     function getMoveByClick(e){
         const image = document.getElementById("fractal");
