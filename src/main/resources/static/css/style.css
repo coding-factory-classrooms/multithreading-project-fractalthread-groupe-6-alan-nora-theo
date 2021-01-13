@@ -1,3 +1,20 @@
 body {
     margin: 0px;
 }
+.toolbar{
+    position: absolute;
+    display: flex;
+    right: 0px;
+    bottom: 0px;
+    width: 100vw;
+    height: 10vh;
+    flex-direction: row-reverse;
+    margin: 0px 10px;
+}
+.button-fractal{
+    z-index: 5;
+    background-color: dimgrey;
+    padding: 10px;
+    border-radius: 10px;
+    margin-left: 10px;
+}

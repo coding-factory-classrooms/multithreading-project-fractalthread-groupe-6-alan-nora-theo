@@ -8,7 +8,7 @@ public class MandelbrotTask implements Callable<FractalResult> {
     private int width;
     private int height;
     private int max = 5000 ;
-    private int zoom;
+    private float zoom;
     private Vector pan;
     private double endX;
     private double endY;
@@ -16,26 +16,23 @@ public class MandelbrotTask implements Callable<FractalResult> {
     private double startY;
     private int id;
 
-    static String saveBasePath = "src/main/resources/static/img/";
-
-
-
-    public MandelbrotTask(int pixelWidth, int pixelHeight, double startX, double endX, double startY, double endY,int id,Vector vector) {
-        this.width = pixelWidth;
-        this.height = pixelHeight;
+    public MandelbrotTask(int widthChuck, int heightChuck, double startX, double startY,int id,float zoom, Vector vector) {
+        this.width = widthChuck;
+        this.height = heightChuck;
         this.startX = startX;
-        this.endX = endX;
+        this.endX = startX + widthChuck;
         this.startY = startY;
-        this.endY = endY;
+        this.endY = startY + heightChuck;
         this.id = id;
         this.pan = vector;
+        this.zoom = zoom;
     }
 
 
 
     @Override
     public FractalResult call() {
-
+        System.out.println("Zoom call : "+zoom);
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         int black = 0;
         int[] colors = new int[max];
@@ -57,10 +54,8 @@ public class MandelbrotTask implements Callable<FractalResult> {
     //Génére les pixels du Mandelbrots
     public int calculatePixels(double pixelX, double pixelY, Vector vector) {
 
-//        double c_re = ((((pixelX + startX) - 500 ) * pan.X) * 4.0  /500) / zoom;
-//        double c_im = ((((pixelY+ startY) - 500) * pan.Y)* 4.0 / 500) / zoom;
-        double c_re = ((((pixelX + startX) - 500) + vector.x) * 4.0  /500);
-        double c_im = ((((pixelY+ startY) - 500) + vector.y) * 4.0 / 500);
+        double c_re = ((((pixelX + startX) - 500) + vector.x) * 4.0  /500)/zoom;
+        double c_im = ((((pixelY+ startY) - 500) + vector.y) * 4.0 / 500)/zoom;
         double x = 0, y = 0;
         int iterations = 0;
         while (x * x + y * y < 4 && iterations < max) {

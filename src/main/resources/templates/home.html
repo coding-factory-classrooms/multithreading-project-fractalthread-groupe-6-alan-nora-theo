@@ -1,18 +1,30 @@
 #parse("base.html")
 #@mainLayout()
-<img id="mandelbrot" src="" hidden height="1000" width="1000">
+<!--<canvas id="fractal"></canvas>-->
+<div id="fractal-content">
+    <img id="fractal" src="" hidden height="1000" width="1000"  style="z-index: 1">
+</div>
+<div class="toolbar">
+    <img id="zoom-in" class="button-fractal" src="img/zoom-in.svg" height="50" width="50" style="" onclick="zoomIn()">
+    <img id="zoom-out" class="button-fractal" src="img/zoom-out.svg" height="50" width="50" style=""  onclick="zoomOut()">
+</div>
 <script>
     const pan = {x:0,y:0};
-    let zoom = 1;
+    const zoomMultiplierLanding = [2.2,10.0, 20.0, 50.0, 100.0, 500.0, 1000.0, 2500.0, 5000.0, 10000.0, 15000.0, 20000.0];
+    const zoomMultiplierRef = [1.0,5.0, 20.0, 50.0, 100.0, 500.0, 1000.0, 2500.0, 5000.0, 10000.0, 15000.0, 20000.0];
+    let zoomMultiplier = 0.1;
+    let zoom = 1.0;
+    let scale = 0;
     const maxHeight = window.innerHeight;
     const maxWidth = window.innerWidth;
-    const image = document.getElementById("mandelbrot");
 
     function drawMandelbrot(moveX = 1, moveY = 1){
         fetch(`/mandelbrot?width=${maxWidth}&height=${maxHeight}&zoom=${zoom}&moveX=${moveX}&moveY=${moveY}`).then(response=>{return response.text()})
             .then(data=>{
-                image.setAttribute("src",data ?? null)
+                const image = document.getElementById("fractal");
+                image.setAttribute("src",data)
                 image.hidden = !(image.getAttribute("src") != null);
+                viewCenterBoxWidth();
             }).catch(e=>{
                 console.error(e)
         })
@@ -42,42 +54,59 @@
         const [moveX, moveY] = getMoveByClick(e);
         pan.x += moveX
         pan.y += moveY
-        // zoom +=1;
         drawMandelbrot(pan.x, pan.y)
     })
 
-    document.addEventListener("keypress",(e)=>{
-        e.preventDefault()
-        console.log("move")
-        move +=100;
-        drawMandelbrot()
-    })
+    function zoomIn(){
+        let resultZoomEchlon = zoomMultiplierLanding.find(e=>e===parseFloat(zoom.toPrecision(2)));
+        if(resultZoomEchlon){
+            let index = zoomMultiplierLanding.findIndex(e=>e===resultZoomEchlon)
+            console.log(index)
+            zoomMultiplier = zoomMultiplierRef[index]
+        }
+        zoom+= zoomMultiplier
+        drawMandelbrot();
+    }
+
+    function zoomOut(){
+        if(zoom == 1) return;
+        zoom-= zoomMultiplier
+        drawMandelbrot();
+    }
 
     function viewCenterBoxWidth(){
-        const width = (image.width/2), height = (image.height/2);
-        console.log("width:"+width+"; height: "+height);
-        const container = document.getElementById("content")
+        const imgWidth = document.getElementById("fractal").clientWidth
+        const imgHigth = document.getElementById("fractal").clientHeight
+        console.log(imgWidth, imgHigth)
+        // const width = (window.innerWidth/2), height = (window.innerHeight/2);
+        const width = (imgWidth/2), height = (imgHigth/2);
+        const container = document.getElementById("fractal-content")
+        container.style.marginLeft= "auto";
+        container.style.marginRight= "auto"
+        container.style.width = imgWidth+"px";
+        container.style.height = imgHigth+"px";
+        container.style.position = "relative";
+
         let node = document.createElement("div")
-        node.style.width = image.width+"px";
+        node.style.width = imgWidth+"px";
         node.style.height = "1px";
         node.style.backgroundColor = "white";
         node.style.position = "absolute";
         node.style.top = height+"px";
-        node.style.right = "0px"
         container.appendChild(node);
 
         let node2 = document.createElement("div")
-        node2.style.width = "1px";
-        node2.style.height = image.height+"px";
+        node2.style.width = 1+"px";
+        node2.style.height = imgHigth+"px";
         node2.style.backgroundColor = "white";
         node2.style.position = "absolute";
         node2.style.top = "0px";
-        node2.style.right = width+"px"
+        node2.style.left = width+"px"
         container.appendChild(node2);
     }
 
     // Init function after load
-    viewCenterBoxWidth();
+    // viewCenterBoxWidth();
     drawMandelbrot();
 </script>
 #end
