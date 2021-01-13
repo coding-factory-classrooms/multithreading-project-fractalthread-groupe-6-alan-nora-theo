@@ -18,9 +18,12 @@ public class FractalManager {
     //private static final int THREADS = 8;
 
     private final int max = 5000;
+    LRUCache<String> cache = new LRUCache<>(6);
+    String key;
 
     public String generateFractal(int width, int height, float zoom, MandelbrotTask.Vector newVector) {
         List<Future<FractalResult>> futures = new ArrayList<>();
+
 
         int wSquare = WIDTH / 3 ;
         int hSquare = HEIGHT / 2 ;
@@ -64,8 +67,33 @@ public class FractalManager {
                 e.printStackTrace();
             }
         }
+
+
         BufferedImage bufferedImage = drawMandelbrots(allMandelbrots, width, height);
-        String image = generate(bufferedImage);
+        //        if (key de allMandelbrots existe dans le cache et si il existe l'appeler){
+//           BufferedImage bufferedImage = value du cache correspondant a la key
+//        }else{
+//            generer l'image et lui attribuer une key
+//          BufferedImage bufferedImage = drawMandelbrots(allMandelbrots, width, height);
+//        }
+            String image;
+            key = "1";
+            System.out.println("Entrée:");
+            System.out.println(cache.get(key));
+            if (cache.get(key) != null){
+                System.out.println("from cache");
+                 image = cache.get(key).toString();
+            }else{
+                System.out.println("from generate");
+                 image = generate(bufferedImage);
+                cache.put("1",image);
+                System.out.println("Put:");
+                System.out.println(cache.get(key));
+            }
+
+
+
+
 
         long elapsed = System.currentTimeMillis() - start;
 //        System.out.println(elapsed);
@@ -73,6 +101,7 @@ public class FractalManager {
     }
 
     private BufferedImage drawMandelbrots(List<FractalResult> allMandelbrots , int width , int height ) {
+
 
         BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         final Graphics2D g = image.createGraphics();

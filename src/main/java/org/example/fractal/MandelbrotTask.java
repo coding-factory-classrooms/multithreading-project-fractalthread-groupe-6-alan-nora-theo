@@ -46,6 +46,7 @@ public class MandelbrotTask implements Callable<FractalResult> {
                 else image.setRGB(col, row, black);
             }
         }
+        System.out.println(image);
         FractalResult result = new FractalResult(id,image);
         return result;
     }
@@ -68,7 +69,7 @@ public class MandelbrotTask implements Callable<FractalResult> {
         return iterations;
     }
 
-    public static class Vector { // TODO: Vector
+    public static class Vector {
         float x;
         float y;
 
