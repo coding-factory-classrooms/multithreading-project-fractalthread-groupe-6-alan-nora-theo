@@ -26,40 +26,27 @@ public class FractalManager {
     }
 
     public String generateFractal(int width, int height, float zoom, MandelbrotTask.Vector newVector, Layout layout) {
-        List<Future<FractalResult>> futures = new ArrayList<>();
-        int wSquare = layout.WIDTH / 3 ;
-        int hSquare = layout.HEIGHT / 2 ;
+        List<MandelbrotTask> mandelbrotTasks = new ArrayList<>();
 
-        int wSquare = WIDTH / 3 ;
-        int hSquare = HEIGHT / 3 ;
+        int widthChunk = WIDTH / 3 ;
+        int heightChunk = HEIGHT / 3 ;
         int startX = 0;
         int startY = 0;
 
-        //On crée le threadpool
-         int cores = Runtime.getRuntime().availableProcessors();
-        ExecutorService threadPool = Executors.newFixedThreadPool(cores);
         // On lance le threadpool
         int nbChunks = fractalConfig.nbChunkWidth*fractalConfig.nbChunkHeight;
         for (int chunk = 0; chunk < nbChunks; chunk++) {
             // On identifie chaque tuile
-            futures.add(threadPool.submit(new MandelbrotTask(wSquare, hSquare, startX, startY, id, newVector, zoom,layout)));
-
+            mandelbrotTasks.add(new MandelbrotTask(widthChunk, heightChunk, startX, startY, chunk, zoom, newVector, layout));
             // On calcule les limites de chaque tuile
-            startX = startX+wSquare;
+            startX = startX+widthChunk;
 
             if(startX == (layout.getWidth()/fractalConfig.nbChunkWidth) * fractalConfig.nbChunkWidth){
-                startY = startY+ hSquare;
                 startX = 0;
             }
         }
 
-        threadPool.shutdown();
-
-        try {
-            threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        List<Future<FractalResult>> futures = threadFractal(mandelbrotTasks);
 
         List<FractalResult> allMandelbrots = new ArrayList<>();
         for ( Future<FractalResult> future : futures) {
@@ -71,13 +58,36 @@ public class FractalManager {
                 e.printStackTrace();
             }
         }
+
         BufferedImage bufferedImage = drawMandelbrots(allMandelbrots, WIDTH, HEIGHT);
         String image = generate(bufferedImage);
 
         return image;
     }
 
-    private BufferedImage drawMandelbrots(List<FractalResult> allMandelbrots , int width , int height, Layout layout ) {
+    private List<Future<FractalResult>> threadFractal(List<MandelbrotTask> mandelbrotTasks){
+        List<Future<FractalResult>> futures = new ArrayList<>();
+
+        //On crée le threadpool
+        int cores = Runtime.getRuntime().availableProcessors();
+        ExecutorService threadPool = Executors.newFixedThreadPool(cores);
+        // On lance le threadpool
+        for (MandelbrotTask mandelbrot : mandelbrotTasks) {
+            futures.add(threadPool.submit(mandelbrot));
+        }
+
+        threadPool.shutdown();
+
+        try {
+            threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return futures;
+    }
+
+    private BufferedImage drawMandelbrots(List<FractalResult> allMandelbrots , int width , int height ) {
 
         BufferedImage image = new BufferedImage(layout.getWidth(), layout.getHeight(), BufferedImage.TYPE_INT_RGB);
         final Graphics2D g = image.createGraphics();
