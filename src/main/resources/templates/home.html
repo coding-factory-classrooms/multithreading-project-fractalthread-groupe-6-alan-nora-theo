@@ -18,7 +18,7 @@
     const maxHeight = window.innerHeight;
     const maxWidth = window.innerWidth;
 
-    function drawMandelbrot(moveX = 1, moveY = 1){
+    function drawMandelbrot(moveX = pan.x, moveY = pan.y){
         fetch(`/mandelbrot?width=${maxWidth}&height=${maxHeight}&zoom=${zoom}&moveX=${moveX}&moveY=${moveY}`).then(response=>{return response.text()})
             .then(data=>{
                 const image = document.getElementById("fractal");
@@ -31,9 +31,11 @@
     }
 
     function getMoveByClick(e){
-
+        const image = document.getElementById("fractal");
+        const imgWidth = document.getElementById("fractal").clientWidth
+        const imgHigth = document.getElementById("fractal").clientHeight
         const mouseX = e.clientX, mouseY = e.clientY;
-        const centerX = image.width/2, centerY = image.height/2
+        const centerX = imgWidth/2, centerY = imgHigth/2
         let moveX = Math.abs(centerX - mouseX), moveY = Math.abs(centerY - mouseY);
 
         // Positif ou négatif ?
@@ -42,14 +44,10 @@
         if(centerY > mouseY)
             moveY = -moveY
 
-        console.log("==================================");
-        console.log("Mouse", mouseX, mouseY)
-        console.log("Center", centerX, centerY)
-        console.log("Move ", moveX, moveY);
         return [moveX, moveY];
     }
 
-    document.addEventListener("click",(e)=>{
+    document.getElementById("fractal").addEventListener("click",(e)=>{
         e.preventDefault();
         const [moveX, moveY] = getMoveByClick(e);
         pan.x += moveX
@@ -73,6 +71,15 @@
         zoom-= zoomMultiplier
         drawMandelbrot();
     }
+
+    document.addEventListener("keydown",(e)=>{
+        if(e.code == "Equal"){
+                zoomIn();
+        }
+        if(e.code == "Minus"){
+                zoomOut();
+        }
+    })
 
     function viewCenterBoxWidth(){
         const imgWidth = document.getElementById("fractal").clientWidth

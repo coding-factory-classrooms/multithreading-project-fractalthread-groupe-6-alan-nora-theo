@@ -54,8 +54,8 @@ public class MandelbrotTask implements Callable<FractalResult> {
     //Génére les pixels du Mandelbrots
     public int calculatePixels(double pixelX, double pixelY, Vector vector) {
 
-        double c_re = ((((pixelX + startX) - 500) + vector.x) * 4.0  /500)/zoom;
-        double c_im = ((((pixelY+ startY) - 500) + vector.y) * 4.0 / 500)/zoom;
+        double c_re = ((((pixelX + startX + vector.x) - 500)) * 4.0  /500)/ zoom;
+        double c_im = ((((pixelY+ startY + vector.y) - 500)) * 4.0 / 500)/ zoom;
         double x = 0, y = 0;
         int iterations = 0;
         while (x * x + y * y < 4 && iterations < max) {
