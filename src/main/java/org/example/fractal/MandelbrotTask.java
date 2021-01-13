@@ -8,7 +8,7 @@ public class MandelbrotTask implements Callable<FractalResult> {
     private int width;
     private int height;
     private int max = 5000 ;
-    private int zoom;
+    private float zoom;
     private Vector pan;
     private double endX;
     private double endY;
@@ -24,19 +24,25 @@ public class MandelbrotTask implements Callable<FractalResult> {
     public MandelbrotTask(int pixelWidth, int pixelHeight, double startX, double endX, double startY, double endY,int id, Layout layout) {
         this.width = pixelWidth;
         this.height = pixelHeight;
+
+   
+
         this.startX = startX;
-        this.endX = endX;
+        this.endX = startX + widthChuck;
         this.startY = startY;
-        this.endY = endY;
+        this.endY = startY + heightChuck;
         this.id = id;
         this.layout = layout;
+        this.pan = vector;
+        this.zoom = zoom;
+
     }
 
 
 
     @Override
     public FractalResult call() {
-
+        System.out.println("Zoom call : "+zoom);
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         int black = 0;
         int[] colors = new int[max];
@@ -45,7 +51,9 @@ public class MandelbrotTask implements Callable<FractalResult> {
         }
         for (int row = 0 ; row < height; row ++) {
             for (int col = 0; col < width; col++) {
+
                 int iterations = calculatePixels(col , row , layout);
+
                 if (iterations < max) image.setRGB(col, row, colors[iterations]);
                 else image.setRGB(col, row, black);
             }
@@ -56,6 +64,7 @@ public class MandelbrotTask implements Callable<FractalResult> {
 
 
     //Génére les pixels du Mandelbrots
+
     public int calculatePixels(double pixelX, double pixelY, Layout layout) {
 
         int widthLayout = (int)layout.getWidth()/2;
@@ -63,6 +72,8 @@ public class MandelbrotTask implements Callable<FractalResult> {
 
         double c_re = ((pixelX + startX) - widthLayout) * 4.0  /heightLayout;
         double c_im = ((pixelY+ startY) - heightLayout) * 4.0 / widthLayout;
+
+ 
         double x = 0, y = 0;
         int iterations = 0;
         while (x * x + y * y < 4 && iterations < max) {

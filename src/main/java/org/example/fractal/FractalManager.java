@@ -20,38 +20,33 @@ public class FractalManager {
 
     private final int max = 5000;
 
+
     public String generateFractal(int width, int height, int zoom, MandelbrotTask.Vector newVector, Layout layout) {
 
         int wSquare = layout.WIDTH / 3 ;
         int hSquare = layout.HEIGHT / 2 ;
 
         int startX = 0;
-        int endX = 0;
         int startY = 0;
-        int endY = 0;
-
-        List<Future<FractalResult>> futures = new ArrayList<>();
         int id = 0;
 
         //On crée le threadpool
         // int cores = Runtime.getRuntime().availableProcessors();
         ExecutorService threadPool = Executors.newFixedThreadPool(6);
         // On lance le threadpool
-        endY = endY + hSquare;
         for (int thread = 0; thread < 6; thread++) {
             // On identifie chaque tuile
-            id++;
-            // On calcule les limites de chaque tuile
-            startX = endX;
-            endX = endX + wSquare;
-
+        
             futures.add(threadPool.submit(new MandelbrotTask(wSquare, hSquare, startX, endX, startY, endY, id, layout)));
 
-            if( endX == (layout.getWidth()/3) * 3 ){
+            
+            // On calcule les limites de chaque tuile
+            startX = startX+wSquare;
+
+          if( endX == (layout.getWidth()/3) * 3 ){
                 startY = endY;
                 endY = endY + hSquare;
                 startX = 0;
-                endX = 0;
             }
         }
 
@@ -101,8 +96,7 @@ public class FractalManager {
         results.sort((a,b)->{
             return a.id-b.id;
         });
-        System.out.println(results);
-
+        System.out.println(results.toString());
         for (FractalResult result : results){
 
             g.drawImage(result.image , null, offsetX , offsetY );
@@ -156,7 +150,10 @@ public class FractalManager {
         }
     }
 
+
 }
+
+
 class FractalResult {
     int id;
     BufferedImage image;
@@ -164,6 +161,14 @@ class FractalResult {
     public FractalResult(int id, BufferedImage image) {
         this.id = id;
         this.image = image;
+    }
+
+    @Override
+    public String toString() {
+        return "FractalResult{" +
+                "id=" + id +
+                ", image=" + image +
+                '}';
     }
 }
 
