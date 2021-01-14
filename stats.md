@@ -34,29 +34,30 @@ Avec MultiThread:
 
 ###Nora :
 Sans MultiThread :
-- 1 - 
-- 2 -
-- 3 - 
-- 4 - 
-- 5 -
-- 6 - 
-- 7 - 
-- 8 - 
-- 9 - 
-- 10 -
-- Moyen : 
+- 1 - 937ms
+- 2 - 563ms
+- 3 - 610ms
+- 4 - 575ms
+- 5 - 568ms
+- 6 - 506ms
+- 7 - 523ms
+- 8 - 515ms
+- 9 - 486ms
+- 10 - 508ms
+- Moyen : 579ms
 
 Avec MultiThread:
-- 1 - 
-- 2 -
-- 3 -
-- 4 -
-- 5 -
-- 6 -
-- 7 -
-- 8 -
-- 9 -
-- 10 -
+- 1 - 1292 ms
+- 2 - 1369 ms
+- 3 - 1332 ms
+- 4 - 1331 ms
+- 5 - 1496 ms
+- 6 - 1371 ms
+- 7 - 1257 ms
+- 8 - 1332 ms
+- 9 - 1287 ms
+- 10 - 1405 ms
+- Moyenne : 1347 ms
 
 ###Theo :
 Sans MultiThread :
