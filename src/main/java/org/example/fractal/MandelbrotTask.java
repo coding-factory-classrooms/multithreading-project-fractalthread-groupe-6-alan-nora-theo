@@ -10,8 +10,6 @@ public class MandelbrotTask implements Callable<FractalResult> {
     private int max = 5000 ;
     private float zoom;
     private Vector pan;
-    private double endX;
-    private double endY;
     private double startX;
     private double startY;
     private int id;
@@ -25,9 +23,7 @@ public class MandelbrotTask implements Callable<FractalResult> {
         this.width = widthChuck;
         this.height = heightChuck;
         this.startX = startX;
-        this.endX = startX + widthChuck;
         this.startY = startY;
-        this.endY = startY + heightChuck;
         this.id = id;
         this.layout = layout;
         this.pan = vector;
@@ -39,7 +35,6 @@ public class MandelbrotTask implements Callable<FractalResult> {
 
     @Override
     public FractalResult call() {
-        System.out.println("Zoom call : "+zoom);
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         int black = 0;
         int[] colors = new int[max];
@@ -48,7 +43,7 @@ public class MandelbrotTask implements Callable<FractalResult> {
         }
         for (int row = 0 ; row < height; row ++) {
             for (int col = 0; col < width; col++) {
-                int iterations = calculatePixels(col+startX, row+startY, pan, layout);
+                int iterations = calculatePixels(col+startX, row+startY, layout);
                 if (iterations < max) image.setRGB(col, row, colors[iterations]);
                 else image.setRGB(col, row, black);
             }
@@ -59,7 +54,7 @@ public class MandelbrotTask implements Callable<FractalResult> {
 
 
     //Génére les pixels du Mandelbrots
-    public int calculatePixels(double pixelX, double pixelY, Vector vector, Layout layout) {
+    public int calculatePixels(double pixelX, double pixelY, Layout layout) {
 //        double c_re = ((((pixelX + startX + vector.x) - 500)) * 4.0  /500)/ zoom;
         double c_re = 2 * (pixelX - layout.getWidth()/2) / ( 0.5 * zoom * layout.getWidth()) + pan.x;
 //        double c_im = ((((pixelY+ startY + vector.y) - 500)) * 4.0 / 500)/ zoom;

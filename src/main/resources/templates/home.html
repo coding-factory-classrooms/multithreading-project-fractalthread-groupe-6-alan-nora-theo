@@ -5,46 +5,61 @@
 <div id="fractal-content">
     <img id="fractal" src="" hidden style="z-index: 1">
 </div>
+<!--<div id="fractal-debug" style="z-index: 999; position: absolute"></div>-->
 <div>
-    <img id="zoom-in" class="button-fractal" src="img/zoom-in.svg" height="50" width="50" style="bottom: 10px;right: 10px" onclick="zoomIn()">
-    <img id="zoom-out" class="button-fractal" src="img/zoom-out.svg" height="50" width="50" style="bottom: 10px;right: 90px"  onclick="zoomOut()">
+    <img id="zoom-in" class="button-fractal" src="img/zoom-in.svg" height="50" width="50" style="bottom: 10px;right: 10px; z-index: 999" onclick="zoomIn()">
+    <img id="zoom-out" class="button-fractal" src="img/zoom-out.svg" height="50" width="50" style="bottom: 10px;right: 90px; z-index: 999"  onclick="zoomOut()">
 </div>
 <script>
     const pan = {x:0,y:0};
-    const zoomMultiplierLanding = [2.2,10.0, 20.0, 50.0, 100.0, 500.0, 1000.0, 2500.0, 5000.0, 10000.0, 15000.0, 20000.0];
-    const zoomMultiplierRef = [1.0,5.0, 20.0, 50.0, 100.0, 500.0, 1000.0, 2500.0, 5000.0, 10000.0, 15000.0, 20000.0];
+    const zoomMultiplierLanding = [1.0,2.2,10.0, 20.0, 50.0, 100.0, 500.0, 1000.0, 2500.0, 5000.0, 10000.0, 15000.0, 20000.0];
+    const zoomMultiplierRef = [0.1,1.0,5.0, 20.0, 50.0, 100.0, 500.0, 1000.0, 2500.0, 5000.0, 10000.0, 15000.0, 20000.0];
     let zoomMultiplier = 0.1;
     let zoom = 1.0;
     let scale = 0;
     let maxHeight = window.innerHeight;
     let maxWidth = window.innerWidth;
 
-    function drawMandelbrot(moveX = 1, moveY = 1){
-        fetch(`/mandelbrot?width=${maxWidth}&height=${maxHeight}&zoom=${zoom}&moveX=${moveX}&moveY=${moveY}&layoutHeight=${maxHeight}&layoutWidth=${maxWidth}`).then(response=>{return response.text()})
+    function drawMandelbrot(){
+        fetch(`/mandelbrot?zoom=${zoom}&moveX=${pan.x}&moveY=${pan.y}&layoutHeight=${maxHeight}&layoutWidth=${maxWidth}`).then(response=>{return response.text()})
             .then(data=>{
                 const image = document.getElementById("fractal");
+                updateSizeImage(maxWidth,maxHeight)
                 image.setAttribute("src",data)
                 image.hidden = !(image.getAttribute("src") != null);
-
+                viewCenterBoxWidth();
             }).catch(e=>{
                 console.error(e)
         })
 
     }
 
-    setTimeout(function() {
-        window.onresize = function(){
+    window.addEventListener("resize", ()=>{
+        console.log("rezize")
         maxHeight = window.innerHeight;
         maxWidth =  window.innerWidth;
+        drawMandelbrot();
+    })
 
-        console.log("Fenetre reajuster - height" + window.innerHeight );
-        console.log("Fenetre reajuster - width" + window.innerWidth);
+    function updateSizeImage(width, height){
+        const image = document.getElementById("fractal");
+        image.style.width = width+"px";
+        image.style.height = height+"px";
+    }
 
-        requestAnimationFrame(drawMandelbrot);
-
-        }
-
-    }, 500);
+    // setTimeout(function() {
+    //     window.onresize = function(){
+    //     maxHeight = window.innerHeight;
+    //     maxWidth =  window.innerWidth;
+    //
+    //     console.log("Fenetre reajuster - height" + window.innerHeight );
+    //     console.log("Fenetre reajuster - width" + window.innerWidth);
+    //
+    //     requestAnimationFrame(drawMandelbrot);
+    //
+    //     }
+    //
+    // }, 500);
 
 
 
@@ -63,19 +78,13 @@
             moveX = -moveX
         if(centerY > mouseY)
             moveY = -moveY
-        console.log("==================================");
-        console.log("Mouse", mouseX, mouseY)
-        console.log("Center", centerX, centerY)
-        console.log("Move ", moveX, moveY);
 
         return [moveX, moveY];
     }
 
-       document.addEventListener("click",(e)=>{
+    document.getElementById("fractal").addEventListener("click",(e)=>{
         e.preventDefault();
         const [moveX, moveY] = getMoveCoordinate(e);
-        const lengthNumberX = Math.abs(moveX).toString().length;
-        const lengthNumberY = Math.abs(moveY).toString().length;
         pan.x += moveX / 500 * 0.5;
         pan.y += moveY / 500 * 0.5;
         drawMandelbrot(pan.x, pan.y)
@@ -109,14 +118,34 @@
             console.log(index)
             zoomMultiplier = zoomMultiplierRef[index]
         }
-        zoom+= zoomMultiplier
+        zoom+= Math.abs(zoomMultiplier);
         drawMandelbrot();
     }
 
     function zoomOut(){
-        if(zoom == 1) return;
-        zoom-= zoomMultiplier
+        console.log("zoom",Math.abs(zoom))
+        if(Math.abs(zoom) == 1.0) return;
+        let resultZoomEchlon = zoomMultiplierLanding.find(e=>e===parseFloat(zoom.toPrecision(2)));
+        if(resultZoomEchlon){
+            let index = zoomMultiplierLanding.findIndex(e=>e===resultZoomEchlon)
+            console.log(index)
+            console.log(resultZoomEchlon)
+            if(index == 0)
+                zoomMultiplier = zoomMultiplierRef[0];
+            else
+                zoomMultiplier = zoomMultiplierRef[index-1];
+        }
+        console.log("zoomMultiplier ",zoomMultiplier)
+        zoom-= Math.abs(zoomMultiplier)
         drawMandelbrot();
+    }
+
+    function resetFractal(){
+        zoom = 1;
+        zoomMultiplier = 1;
+        pan.x = 0;
+        pan.y = 0;
+        drawMandelbrot()
     }
 
     document.addEventListener("keydown",(e)=>{
@@ -131,10 +160,15 @@
     function viewCenterBoxWidth(){
         const imgWidth = document.getElementById("fractal").clientWidth
         const imgHigth = document.getElementById("fractal").clientHeight
-        console.log(imgWidth, imgHigth)
+
         // const width = (window.innerWidth/2), height = (window.innerHeight/2);
         const width = (imgWidth/2), height = (imgHigth/2);
         const container = document.getElementById("fractal-content")
+        if(container.children.length == 3){
+            let img = container.children[0]
+            container.innerHTML = "";
+            container.appendChild(img);
+        }
         container.style.marginLeft= "auto";
         container.style.marginRight= "auto"
         container.style.width = imgWidth+"px";

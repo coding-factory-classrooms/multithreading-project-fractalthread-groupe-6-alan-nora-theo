@@ -2,21 +2,18 @@ package org.example.fractal;
 
 public class Layout {
 
-        int HEIGHT;
-        int WIDTH;
+        private int height;
+        private int width;
 
-        public Layout(int HEIGHT, int WIDTH) {
-            this.HEIGHT = HEIGHT;
-            this.WIDTH = WIDTH;
+        public Layout(int height, int width) {
+            this.height = height;
+            this.width = width;
         }
-
 
     public int getHeight() {
-            return HEIGHT;
+            return height;
         }
-
-        public int getWidth() {
-            return WIDTH;
+    public int getWidth() {
+            return width;
         }
-
 }

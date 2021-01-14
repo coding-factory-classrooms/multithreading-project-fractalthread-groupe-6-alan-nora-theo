@@ -19,8 +19,6 @@ public class HomeController {
     }
 
     public String getPicture(Request req, Response res){
-        int width = Integer.parseInt(req.queryParams("width"));
-        int height = Integer.parseInt(req.queryParams("height"));
         float zoom = Float.parseFloat(req.queryParams("zoom"));
         float moveX = Float.parseFloat(req.queryParams("moveX"));
         float moveY = Float.parseFloat(req.queryParams("moveY"));
@@ -31,7 +29,7 @@ public class HomeController {
         FractalConfig fractalConfig = new FractalConfig(3,3,5000, TypeFractal.MANDELBROT);
         FractalManager fractalManager = new FractalManager(fractalConfig);
         Layout layout = new Layout(layoutHeight,layoutWidth);
-        String b64Image = fractalManager.generateFractal(width,height,zoom, newVector);
+        String b64Image = fractalManager.generateFractal(zoom, newVector, layout);
         res.type("text/plain");
         res.status(200);
         return b64Image;

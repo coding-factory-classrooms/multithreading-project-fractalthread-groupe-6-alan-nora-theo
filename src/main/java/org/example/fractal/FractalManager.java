@@ -13,23 +13,18 @@ import java.util.concurrent.*;
 
 public class FractalManager {
 
-
-    //private static final int WIDTH = (int)layout.getWidth();
-    //private static final int HEIGHT = (int)layout.getHeight();
-    //private static final int THREADS = 8;
-
     private final int max = 5000;
-
     private FractalConfig fractalConfig;
-        this.fractalConfig = fractalConfig;
+
     public FractalManager(FractalConfig fractalConfig) {
+        this.fractalConfig = fractalConfig;
     }
 
-    public String generateFractal(int width, int height, float zoom, MandelbrotTask.Vector newVector, Layout layout) {
+    public String generateFractal(float zoom, MandelbrotTask.Vector newVector, Layout layout) {
         List<MandelbrotTask> mandelbrotTasks = new ArrayList<>();
-
-        int widthChunk = WIDTH / 3 ;
-        int heightChunk = HEIGHT / 3 ;
+        System.out.println(layout.getWidth() + " : "+layout.getHeight());
+        int widthChunk = layout.getWidth() / fractalConfig.nbChunkWidth ;
+        int heightChunk = layout.getHeight() / fractalConfig.nbChunkHeight ;
         int startX = 0;
         int startY = 0;
 
@@ -37,11 +32,12 @@ public class FractalManager {
         int nbChunks = fractalConfig.nbChunkWidth*fractalConfig.nbChunkHeight;
         for (int chunk = 0; chunk < nbChunks; chunk++) {
             // On identifie chaque tuile
-            mandelbrotTasks.add(new MandelbrotTask(widthChunk, heightChunk, startX, startY, chunk, zoom, newVector, layout));
+            mandelbrotTasks.add(new MandelbrotTask(widthChunk, heightChunk, startX, startY, chunk, newVector, zoom, layout));
             // On calcule les limites de chaque tuile
             startX = startX+widthChunk;
 
             if(startX == (layout.getWidth()/fractalConfig.nbChunkWidth) * fractalConfig.nbChunkWidth){
+                startY = startY+ heightChunk;
                 startX = 0;
             }
         }
@@ -59,7 +55,7 @@ public class FractalManager {
             }
         }
 
-        BufferedImage bufferedImage = drawMandelbrots(allMandelbrots, WIDTH, HEIGHT);
+        BufferedImage bufferedImage = drawMandelbrots(allMandelbrots, layout);
         String image = generate(bufferedImage);
 
         return image;
@@ -87,7 +83,7 @@ public class FractalManager {
         return futures;
     }
 
-    private BufferedImage drawMandelbrots(List<FractalResult> allMandelbrots , int width , int height ) {
+    private BufferedImage drawMandelbrots(List<FractalResult> allMandelbrots , Layout layout ) {
 
         BufferedImage image = new BufferedImage(layout.getWidth(), layout.getHeight(), BufferedImage.TYPE_INT_RGB);
         final Graphics2D g = image.createGraphics();
@@ -100,7 +96,7 @@ public class FractalManager {
     }
 
 
-    private void combine(Graphics2D g , List<FractalResult> results )  throws Exception {
+    private void combine(Graphics2D g , List<FractalResult> results, Layout layout )  throws Exception {
         int offsetX = 0;
         int offsetY = 0;
         results.sort((a,b)->{
@@ -110,10 +106,10 @@ public class FractalManager {
         for (FractalResult result : results){
 
             g.drawImage(result.image , null, offsetX , offsetY );
-            offsetX = offsetX + layout.WIDTH/fractalConfig.nbChunkWidth;
+            offsetX = offsetX + layout.getWidth()/fractalConfig.nbChunkWidth;
 
-            if( offsetX == (layout.WIDT/fractalConfig.nbChunkWidth) * fractalConfig.nbChunkWidth ){
-                offsetY = offsetY + layout.HEIGHT/fractalConfig.nbChunkHeight;
+            if( offsetX == (layout.getWidth()/fractalConfig.nbChunkWidth) * fractalConfig.nbChunkWidth ){
+                offsetY = offsetY + layout.getHeight()/fractalConfig.nbChunkHeight;
                 offsetX = 0;
             }
         }
@@ -133,30 +129,6 @@ public class FractalManager {
         }
         return "";
     }
-
-
-    public class FractalConfig{
-        int width;
-        int height;
-        int startX;
-        int endX;
-        int startY;
-        int endY;
-        float zoom;
-        MandelbrotTask.Vector Vector;
-
-        public FractalConfig(int width, int height, int startX, int endX, int startY, int endY, float zoom, MandelbrotTask.Vector vector ) {
-            this.width = width;
-            this.height = height;
-            this.startX = startX;
-            this.endX = endX;
-            this.startY = startY;
-            this.endY = endY;
-            this.zoom = zoom;
-            Vector = vector;
-        }
-    }
-
 
 }
 
