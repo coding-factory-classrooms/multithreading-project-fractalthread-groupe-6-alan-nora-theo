@@ -1,44 +1,50 @@
 #Statistic
+#### conf 
+- maxIteration: 5000
+- width : 1000
+- heigth: 1000
+- zoom : 1
+- pan(x,y): 0
 
 ###Alan :
 Sans MultiThread :
-- 1 - 3s
-- 2 - 2s
-- 3 - 2s
-- 4 - 2s
-- 5 - 2s
-- 6 - 2s
-- 7 - 2s
-- 8 - 2s
-- 9 - 2s
-- 10 - 2s
-- Moyen : 2s
+- 1 - 704ms
+- 2 - 500ms
+- 3 - 478ms
+- 4 - 458ms
+- 5 - 487ms
+- 6 - 478ms
+- 7 - 450ms
+- 8 - 439ms
+- 9 - 485ms
+- 10 - 475ms
+- Moyen :
 
 Avec MultiThread:
-- 1 -
-- 2 -
-- 3 -
-- 4 -
-- 5 -
-- 6 -
-- 7 -
-- 8 -
-- 9 -
-- 10 -
+- 1 - 2423ms
+- 2 - 2466ms
+- 3 - 2711ms
+- 4 - 2608ms
+- 5 - 2437ms
+- 6 - 2417ms
+- 7 - 2409ms
+- 8 - 2474ms
+- 9 - 2533ms
+- 10 - 1753ms
 
 ###Nora :
 Sans MultiThread :
-- 1 - 17s
-- 2 - 22s
-- 3 - 23s
-- 4 - 25s
-- 5 - 5s
-- 6 - 21s
-- 7 - 6s
-- 8 - 5s
-- 9 - 4s
-- 10 - 4s
-- Moyen : 13s
+- 1 - 
+- 2 -
+- 3 - 
+- 4 - 
+- 5 -
+- 6 - 
+- 7 - 
+- 8 - 
+- 9 - 
+- 10 -
+- Moyen : 
 
 Avec MultiThread:
 - 1 - 

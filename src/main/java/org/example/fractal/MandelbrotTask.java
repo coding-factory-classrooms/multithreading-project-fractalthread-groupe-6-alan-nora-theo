@@ -7,7 +7,7 @@ import java.util.concurrent.Callable;
 public class MandelbrotTask implements Callable<FractalResult> {
     private int width;
     private int height;
-    private int max = 5000 ;
+    private int max;
     private float zoom;
     private Vector pan;
     private double startX;
@@ -19,7 +19,7 @@ public class MandelbrotTask implements Callable<FractalResult> {
 
 
 
-    public MandelbrotTask(int widthChuck, int heightChuck, double startX, double startY,int id, Vector vector, float zoom, Layout layout) {
+    public MandelbrotTask(int widthChuck, int heightChuck, double startX, double startY,int id, Vector vector, float zoom, Layout layout, int maxIteration) {
         this.width = widthChuck;
         this.height = heightChuck;
         this.startX = startX;
@@ -28,7 +28,7 @@ public class MandelbrotTask implements Callable<FractalResult> {
         this.layout = layout;
         this.pan = vector;
         this.zoom = zoom;
-
+        this.max = maxIteration;
     }
 
 

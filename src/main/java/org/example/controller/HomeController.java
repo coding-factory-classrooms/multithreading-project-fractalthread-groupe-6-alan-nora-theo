@@ -29,7 +29,7 @@ public class HomeController {
         FractalConfig fractalConfig = new FractalConfig(3,3,5000, TypeFractal.MANDELBROT);
         FractalManager fractalManager = new FractalManager(fractalConfig);
         Layout layout = new Layout(layoutHeight,layoutWidth);
-        String b64Image = fractalManager.generateFractal(zoom, newVector, layout);
+        String b64Image = fractalManager.generateFractal(zoom, newVector, layout, 5000);
         res.type("text/plain");
         res.status(200);
         return b64Image;
