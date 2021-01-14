@@ -61,26 +61,29 @@ Avec MultiThread:
 
 ###Theo :
 Sans MultiThread :
-- 1 - 3s
-- 2 - 2s
-- 3 - 1s
-- 4 - 1s
-- 5 - 1s
-- 6 - 1s
-- 7 - 1s
-- 8 - 1s
-- 9 - 1s
-- 10 - 1s
-- Moyen : 1s
+
+1 - 1s
+2 - 448 ms
+3 - 415 ms
+4 - 390 ms
+5 - 369 ms
+6 - 392 ms
+7 - 367 ms
+8 - 366 ms
+9 - 393 ms
+10 - 370 ms
+Moyen : 451 ms
 
 Avec MultiThread:
-- 1 -
-- 2 -
-- 3 -
-- 4 -
-- 5 -
-- 6 -
-- 7 -
-- 8 -
-- 9 -
-- 10 -
+
+1 - 603 ms
+2 - 678 ms
+3 - 617 ms
+4 - 644 ms
+5 - 617 ms
+6 - 642 ms
+7 - 615 ms
+8 - 609 ms
+9 - 612 ms
+10 - 607 ms
+Moyen : 624.4 ms
