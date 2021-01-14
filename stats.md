@@ -18,7 +18,7 @@ Sans MultiThread :
 - 8 - 439ms
 - 9 - 485ms
 - 10 - 475ms
-- Moyen :
+- Moyen : 495,5ms
 
 Avec MultiThread:
 - 1 - 2423ms
@@ -31,6 +31,8 @@ Avec MultiThread:
 - 8 - 2474ms
 - 9 - 2533ms
 - 10 - 1753ms
+- Moyen : 2423,1ms
+- Diff = 1927,3ms
 
 ###Nora :
 Sans MultiThread :

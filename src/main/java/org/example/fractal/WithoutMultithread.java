@@ -7,7 +7,7 @@ import java.util.Base64;
 
 public class WithoutMultithread {
     public static void main(String[] args) {
-        MandelbrotTask.Vector newVector = new MandelbrotTask.Vector(0, 0);
+        Vector newVector = new Vector(0, 0);
         Layout layout = new Layout(1000,1000);
         MandelbrotTask mandelbrotTask = new MandelbrotTask(layout.getWidth(), layout.getHeight(), 0,0,0,newVector,0,layout, 5000);
         FractalResult fractalResult = mandelbrotTask.call();

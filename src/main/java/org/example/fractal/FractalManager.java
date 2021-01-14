@@ -20,7 +20,7 @@ public class FractalManager {
         this.fractalConfig = fractalConfig;
     }
 
-    public String generateFractal(float zoom, MandelbrotTask.Vector newVector, Layout layout, int maxIteration) {
+    public String generateFractal(float zoom, Vector newVector, Layout layout, int maxIteration) {
         long start = System.currentTimeMillis();
         List<MandelbrotTask> mandelbrotTasks = new ArrayList<>();
         int widthChunk = layout.getWidth() / fractalConfig.nbChunkWidth ;

@@ -4,7 +4,7 @@ import org.example.core.Template;
 import org.example.fractal.FractalConfig;
 import org.example.fractal.FractalManager;
 import org.example.fractal.Layout;
-import org.example.fractal.MandelbrotTask;
+import org.example.fractal.Vector;
 import org.example.fractal.TypeFractal;
 import spark.Request;
 import spark.Response;
@@ -25,7 +25,7 @@ public class HomeController {
         int layoutHeight = Integer.parseInt(req.queryParams("layoutHeight"));
         int layoutWidth = Integer.parseInt(req.queryParams("layoutWidth"));
 
-        MandelbrotTask.Vector newVector = new MandelbrotTask.Vector(moveX, moveY);
+        Vector newVector = new Vector(moveX, moveY);
         FractalConfig fractalConfig = new FractalConfig(3,3,5000, TypeFractal.MANDELBROT);
         FractalManager fractalManager = new FractalManager(fractalConfig);
         Layout layout = new Layout(layoutHeight,layoutWidth);
