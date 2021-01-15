@@ -10,7 +10,7 @@ public class LRUCache<T> {
     private final Map<String, Node> hashmap;
     private final DoublyLinkedList internalQueue;
 
-    LRUCache(final int capacity) {
+    public LRUCache(final int capacity) {
         this.capacity = capacity;
         this.hashmap = new HashMap<>();
         this.internalQueue = new DoublyLinkedList();
